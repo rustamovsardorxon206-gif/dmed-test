@@ -1,0 +1,2654 @@
+<!DOCTYPE html>
+<html lang="uz" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DMED Tibbiyot &amp; Kompyuter Savodxonligi — Interaktiv Test Platformasi</title>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+          colors: {
+            med: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              200: '#a7f3d0',
+              400: '#2dd4bf',
+              500: '#14b8a6',
+              600: '#0d9488',
+              700: '#0f766e',
+              800: '#115e59',
+              900: '#134e4a',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Base typography & smooth theme transitions */
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Liquid Glass / Glassmorphism surfaces */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.78);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      box-shadow: 0 12px 36px -10px rgba(15, 118, 110, 0.12), 0 4px 12px -2px rgba(15, 23, 42, 0.05);
+    }
+    .dark .glass-card {
+      background: rgba(15, 23, 42, 0.72);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .glass-header {
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(203, 213, 225, 0.55);
+    }
+    .dark .glass-header {
+      background: rgba(15, 23, 42, 0.82);
+      border-bottom: 1px solid rgba(51, 65, 85, 0.6);
+    }
+
+    /* Animated subtle ECG pulse line */
+    .ecg-line {
+      stroke-dasharray: 1200;
+      stroke-dashoffset: 1200;
+      animation: ecgDraw 7s linear infinite;
+    }
+    @keyframes ecgDraw {
+      0% { stroke-dashoffset: 1200; opacity: 0.15; }
+      45% { stroke-dashoffset: 0; opacity: 0.45; }
+      80% { stroke-dashoffset: -400; opacity: 0.2; }
+      100% { stroke-dashoffset: -1200; opacity: 0.1; }
+    }
+
+    /* Smooth card entrance animation */
+    @keyframes slideFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(14px) scale(0.99);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    .animate-card-in {
+      animation: slideFadeIn 0.34s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    /* Feedback banner animation */
+    @keyframes popIn {
+      0% { opacity: 0; transform: translateY(8px) scale(0.98); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .animate-pop-in {
+      animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Subtle shake for validation error */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    .animate-shake {
+      animation: shake 0.35s ease-in-out;
+    }
+
+    /* Option button micro-interaction */
+    .option-btn {
+      transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+    }
+    .option-btn:not(:disabled):hover {
+      transform: translateY(-2px);
+    }
+    .option-btn:not(:disabled):active {
+      transform: scale(0.99);
+    }
+
+    /* Circular SVG progress ring transition */
+    #result-ring-progress {
+      transition: stroke-dashoffset 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* Custom toggle switch */
+    .toggle-checkbox:checked + .toggle-track {
+      background-color: #0d9488;
+    }
+    .toggle-checkbox:checked + .toggle-track .toggle-thumb {
+      transform: translateX(1.25rem);
+    }
+
+    /* Confetti canvas overlay */
+    #confetti-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 60;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/40 to-cyan-50/60 dark:from-slate-950 dark:via-slate-900 dark:to-teal-950/50 text-slate-800 dark:text-slate-100 transition-colors duration-300 selection:bg-teal-500/25">
+
+  <!-- Decorative Ambient Blobs & Subtle ECG Pulse Background -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden -z-10" aria-hidden="true">
+    <div class="absolute -top-32 -left-24 w-96 h-96 rounded-full bg-teal-400/20 dark:bg-teal-500/10 blur-3xl"></div>
+    <div class="absolute top-1/3 -right-28 w-[28rem] h-[28rem] rounded-full bg-cyan-400/20 dark:bg-cyan-500/10 blur-3xl"></div>
+    <div class="absolute -bottom-32 left-1/3 w-96 h-96 rounded-full bg-emerald-400/15 dark:bg-emerald-500/10 blur-3xl"></div>
+
+    <!-- Subtle Medical ECG Line Accent -->
+    <svg class="absolute bottom-10 left-0 w-full h-28 opacity-40 dark:opacity-25 text-teal-500" viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none">
+      <path class="ecg-line" d="M0 70 H260 L285 70 L300 40 L318 98 L336 18 L354 88 L370 70 H680 L705 70 L720 42 L738 96 L756 20 L774 86 L790 70 H1100 L1125 70 L1140 44 L1158 95 L1176 22 L1194 84 L1210 70 H1440" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </div>
+
+  <!-- Confetti Canvas for High Scores -->
+  <canvas id="confetti-canvas" class="hidden"></canvas>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-xs sm:max-w-sm pointer-events-none"></div>
+
+  <!-- Top Persistent Navigation Header -->
+  <header class="sticky top-0 z-40 glass-header">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center text-white shadow-md shadow-teal-500/25 shrink-0">
+          <!-- Medical Cross + Pulse SVG -->
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 4v16M4 12h16" opacity="0.3" />
+            <path d="M3 12h4l2.5-6 4 12 2.5-6H21" />
+          </svg>
+        </div>
+        <div class="min-w-0">
+          <h1 class="text-sm sm:text-base font-extrabold tracking-tight text-slate-900 dark:text-white truncate">
+            DMED Tibbiyot Testi
+          </h1>
+          <p class="text-[11px] sm:text-xs font-medium text-teal-700 dark:text-teal-400 truncate">
+            Kompyuter savodxonligi &amp; DMED (96 savol)
+          </p>
+        </div>
+      </div>
+
+      <!-- Theme Toggle Button -->
+      <div class="flex items-center gap-2 shrink-0">
+        <button id="theme-toggle-btn" type="button" aria-label="Mavzuni o'zgartirish"
+          class="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100/90 hover:bg-slate-200/80 dark:bg-slate-800/90 dark:hover:bg-slate-700/80 border border-slate-200/80 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold transition-all cursor-pointer">
+          <!-- Sun Icon (shown in Dark Mode) -->
+          <svg id="icon-sun" class="w-4 h-4 text-amber-400 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+          </svg>
+          <!-- Moon Icon (shown in Light Mode) -->
+          <svg id="icon-moon" class="w-4 h-4 text-teal-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <span id="theme-label" class="hidden sm:inline">Tungi rejim</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Wrapper -->
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+
+    <!-- ========================================================= -->
+    <!-- SCREEN 1: START SCREEN                                    -->
+    <!-- ========================================================= -->
+    <section id="screen-start" class="space-y-6 animate-card-in">
+      <!-- Hero Banner -->
+      <div class="glass-card rounded-3xl p-6 sm:p-8 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-44 h-44 bg-gradient-to-bl from-teal-400/20 to-transparent rounded-bl-full pointer-events-none"></div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center gap-5">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-500 via-emerald-500 to-cyan-600 flex items-center justify-center text-white shadow-lg shadow-teal-500/30 shrink-0">
+            <!-- Stethoscope / Shield Medical SVG -->
+            <svg class="w-9 h-9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <path d="M9 12h6M12 9v6"></path>
+            </svg>
+          </div>
+          <div class="space-y-1.5">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-teal-100 text-teal-800 dark:bg-teal-900/60 dark:text-teal-300">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              O‘quv kursi bo‘yicha interaktiv trenajyor
+            </span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+              DMED Tibbiyot &amp; Kompyuter Savodxonligi
+            </h2>
+            <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300">
+              96 ta rasmiy test savoli asosida bilimlaringizni sinang, to‘g‘ri javoblarni o‘rganing va xatolar ustida qayta ishlang.
+            </p>
+          </div>
+        </div>
+
+        <!-- User Name Form -->
+        <div class="mt-7 space-y-5">
+          <div>
+            <label for="user-name-input" class="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">
+              Ism va familiyangiz <span class="text-rose-500">*</span>
+            </label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400 pointer-events-none">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </span>
+              <input id="user-name-input" type="text" maxlength="60" autocomplete="name"
+                placeholder="Masalan: Dilnoza Karimova"
+                class="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-white/90 dark:bg-slate-900/80 border-2 border-slate-200 dark:border-slate-700 focus:border-teal-500 dark:focus:border-teal-400 focus:outline-none focus:ring-4 focus:ring-teal-500/15 text-base font-medium text-slate-900 dark:text-white placeholder:text-slate-400 transition-all" />
+            </div>
+            <p id="name-error-msg" class="hidden mt-2 text-xs sm:text-sm font-semibold text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+              <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+              Iltimos, testni boshlashdan avval ism va familiyangizni kiriting.
+            </p>
+          </div>
+
+          <!-- Mode Selector Grid -->
+          <div>
+            <div class="flex items-center justify-between mb-2.5">
+              <span class="text-sm font-bold text-slate-700 dark:text-slate-200">Test rejimini tanlang:</span>
+              <span class="text-xs font-semibold text-teal-600 dark:text-teal-400">5 ta rejim</span>
+            </div>
+
+            <div id="mode-selector" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <!-- Mode 1: All 96 -->
+              <button type="button" data-mode="all"
+                class="mode-card text-left p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-start justify-between gap-3">
+                <div>
+                  <div class="font-bold text-sm sm:text-base">Barcha 96 ta savol</div>
+                  <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">To‘liq imtihon: DMED + IT + Internet</div>
+                </div>
+                <span class="shrink-0 px-2.5 py-1 rounded-xl text-xs font-extrabold bg-teal-100 text-teal-800 dark:bg-teal-900/60 dark:text-teal-300">96 ta</span>
+              </button>
+
+              <!-- Mode 2: DMED (1-50) -->
+              <button type="button" data-mode="dmed"
+                class="mode-card text-left p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-start justify-between gap-3">
+                <div>
+                  <div class="font-bold text-sm sm:text-base">DMED tizimi (1–50)</div>
+                  <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Bemorlar, retseptlar, statsionar, rollar</div>
+                </div>
+                <span class="shrink-0 px-2.5 py-1 rounded-xl text-xs font-extrabold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300">50 ta</span>
+              </button>
+
+              <!-- Mode 3: Computer & Office (51-89) -->
+              <button type="button" data-mode="office"
+                class="mode-card text-left p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-start justify-between gap-3">
+                <div>
+                  <div class="font-bold text-sm sm:text-base">Kompyuter va Office (51–89)</div>
+                  <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Qurilmalar, OS, Word, Excel, PowerPoint</div>
+                </div>
+                <span class="shrink-0 px-2.5 py-1 rounded-xl text-xs font-extrabold bg-cyan-100 text-cyan-800 dark:bg-cyan-900/60 dark:text-cyan-300">39 ta</span>
+              </button>
+
+              <!-- Mode 4: Internet (90-96) -->
+              <button type="button" data-mode="internet"
+                class="mode-card text-left p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-start justify-between gap-3">
+                <div>
+                  <div class="font-bold text-sm sm:text-base">Internet asoslari (90–96)</div>
+                  <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Brauzer, Drive, YouTube, Email, URL, Wi-Fi</div>
+                </div>
+                <span class="shrink-0 px-2.5 py-1 rounded-xl text-xs font-extrabold bg-sky-100 text-sky-800 dark:bg-sky-900/60 dark:text-sky-300">7 ta</span>
+              </button>
+
+              <!-- Mode 5: Quick Practice (25 random) -->
+              <button type="button" data-mode="quick25"
+                class="mode-card sm:col-span-2 text-left p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="font-bold text-sm sm:text-base">Tezkor mashq (25 ta tasodifiy savol)</div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Barcha bo‘limlardan aralash qisqa sinov</div>
+                  </div>
+                </div>
+                <span class="shrink-0 px-2.5 py-1 rounded-xl text-xs font-extrabold bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300">25 ta</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Shuffle Toggles -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <label class="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-slate-100/75 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/70 cursor-pointer select-none">
+              <div class="flex items-center gap-2.5">
+                <svg class="w-5 h-5 text-teal-600 dark:text-teal-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="16 3 21 3 21 8"></polyline>
+                  <line x1="4" y1="20" x2="21" y2="3"></line>
+                  <polyline points="21 16 21 21 16 21"></polyline>
+                  <line x1="15" y1="15" x2="21" y2="21"></line>
+                  <line x1="4" y1="4" x2="9" y2="9"></line>
+                </svg>
+                <span class="text-sm font-semibold text-slate-700 dark:text-slate-200">Savollarni aralashtirish</span>
+              </div>
+              <div class="relative inline-flex items-center">
+                <input id="toggle-shuffle-questions" type="checkbox" class="sr-only toggle-checkbox" checked />
+                <div class="toggle-track w-11 h-6 bg-slate-300 dark:bg-slate-600 rounded-full transition-colors duration-200 p-0.5">
+                  <div class="toggle-thumb w-5 h-5 bg-white rounded-full shadow transition-transform duration-200"></div>
+                </div>
+              </div>
+            </label>
+
+            <label class="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-slate-100/75 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/70 cursor-pointer select-none">
+              <div class="flex items-center gap-2.5">
+                <svg class="w-5 h-5 text-cyan-600 dark:text-cyan-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                  <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                  <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+                  <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+                </svg>
+                <span class="text-sm font-semibold text-slate-700 dark:text-slate-200">Variantlarni aralashtirish</span>
+              </div>
+              <div class="relative inline-flex items-center">
+                <input id="toggle-shuffle-options" type="checkbox" class="sr-only toggle-checkbox" checked />
+                <div class="toggle-track w-11 h-6 bg-slate-300 dark:bg-slate-600 rounded-full transition-colors duration-200 p-0.5">
+                  <div class="toggle-thumb w-5 h-5 bg-white rounded-full shadow transition-transform duration-200"></div>
+                </div>
+              </div>
+            </label>
+          </div>
+
+          <!-- Start CTA Button -->
+          <button id="start-quiz-btn" type="button"
+            class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-teal-600 via-emerald-600 to-cyan-600 hover:from-teal-500 hover:via-emerald-500 hover:to-cyan-500 text-white font-extrabold text-base sm:text-lg shadow-lg shadow-teal-600/30 hover:shadow-xl hover:shadow-teal-600/35 active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 cursor-pointer">
+            <span>Testni boshlash</span>
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Feature Highlights & Download Standalone File Footer -->
+      <div class="glass-card rounded-3xl p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="text-center sm:text-left">
+          <p class="text-sm font-bold text-slate-800 dark:text-slate-100">Oflayn foydalanish uchun saqlab oling</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            Faylni telefoningiz yoki kompyuteringizga yuklab olib, istalgan vaqtda yechishingiz mumkin.
+          </p>
+        </div>
+        <button id="download-html-btn" type="button"
+          class="shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-teal-600 dark:hover:bg-teal-500 text-white text-xs sm:text-sm font-bold shadow-md transition-all cursor-pointer">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>hamshira.tes.html yuklab olish</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- SCREEN 2: QUIZ INTERFACE                                  -->
+    <!-- ========================================================= -->
+    <section id="screen-quiz" class="hidden space-y-5">
+      <!-- Sticky Live Status Bar -->
+      <div class="sticky top-[4.5rem] z-30 glass-card rounded-2xl p-3.5 sm:p-4 space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+          <!-- User & Retry Badge -->
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold text-slate-700 dark:text-slate-200 max-w-[160px] sm:max-w-[220px] truncate">
+              <svg class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <span id="quiz-user-name" class="truncate"></span>
+            </span>
+            <span id="quiz-retry-pill" class="hidden px-2.5 py-1 rounded-xl bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 font-bold text-xs">
+              Xatolar ustida ishlash
+            </span>
+          </div>
+
+          <!-- Counters & Timer -->
+          <div class="flex items-center gap-2 sm:gap-3 font-bold">
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-emerald-100/90 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300" title="To'g'ri javoblar">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><polyline points="20 6 9 17 4 12"/></svg>
+              <span id="live-correct-count">0</span>
+            </span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-rose-100/90 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300" title="Noto'g'ri javoblar">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              <span id="live-wrong-count">0</span>
+            </span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 tabular-nums" title="Sarflangan vaqt">
+              <svg class="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span id="live-timer">00:00</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Question Progress Row -->
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between gap-2 text-xs font-bold">
+            <span class="text-slate-600 dark:text-slate-300">
+              Savol: <span id="quiz-progress-text" class="text-teal-700 dark:text-teal-400 text-sm">1 / 96</span>
+            </span>
+            <span id="quiz-category-pill" class="px-2.5 py-0.5 rounded-full bg-teal-100 dark:bg-teal-900/50 text-teal-800 dark:text-teal-300">
+              DMED tizimi
+            </span>
+          </div>
+          <div class="w-full h-2.5 rounded-full bg-slate-200/80 dark:bg-slate-800 overflow-hidden">
+            <div id="quiz-progress-bar" class="h-full rounded-full bg-gradient-to-r from-teal-500 via-emerald-500 to-cyan-500 transition-all duration-300 ease-out" style="width: 0%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question Card -->
+      <div id="question-card" class="glass-card rounded-3xl p-5 sm:p-7 space-y-6">
+        <div class="space-y-2">
+          <div class="flex items-center justify-between gap-2">
+            <span id="question-original-id" class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+              Savol #1
+            </span>
+          </div>
+          <h3 id="question-text" class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white leading-snug">
+            Savol matni yuklanmoqda...
+          </h3>
+        </div>
+
+        <!-- 4 Options Container -->
+        <div id="options-container" class="space-y-3">
+          <!-- Dynamically populated option buttons -->
+        </div>
+
+        <!-- Instant Feedback Banner -->
+        <div id="feedback-banner" class="hidden rounded-2xl p-4 border-2 animate-pop-in">
+          <div class="flex items-start gap-3">
+            <div id="feedback-icon" class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5"></div>
+            <div class="space-y-1 min-w-0">
+              <p id="feedback-title" class="text-sm sm:text-base font-extrabold"></p>
+              <p id="feedback-detail" class="text-xs sm:text-sm font-medium leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quiz Footer Action Controls -->
+        <div class="pt-2 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 border-t border-slate-200/70 dark:border-slate-700/60">
+          <button id="finish-early-btn" type="button"
+            class="px-4 py-3 rounded-2xl bg-slate-100 hover:bg-rose-50 dark:bg-slate-800 dark:hover:bg-rose-950/50 text-slate-600 hover:text-rose-600 dark:text-slate-300 dark:hover:text-rose-400 font-bold text-sm transition-all cursor-pointer flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg>
+            <span>Testni yakunlash</span>
+          </button>
+
+          <div class="flex items-center gap-3">
+            <span class="hidden md:inline text-xs font-medium text-slate-400 dark:text-slate-500">
+              Enter / → keyingi savol
+            </span>
+            <button id="next-question-btn" type="button" disabled
+              class="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 disabled:from-slate-300 disabled:to-slate-300 dark:disabled:from-slate-700 dark:disabled:to-slate-700 disabled:text-slate-500 dark:disabled:text-slate-400 disabled:cursor-not-allowed text-white font-extrabold text-sm sm:text-base shadow-md shadow-teal-600/20 disabled:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer">
+              <span id="next-btn-label">Keyingi savol</span>
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- SCREEN 3: RESULTS SCREEN                                  -->
+    <!-- ========================================================= -->
+    <section id="screen-results" class="hidden space-y-6 animate-card-in">
+      <!-- Results Summary Card -->
+      <div class="glass-card rounded-3xl p-6 sm:p-8 text-center relative overflow-hidden">
+        <!-- Rating Badge -->
+        <div class="flex justify-center mb-4">
+          <span id="result-mastery-badge" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-extrabold shadow-sm">
+            A'lo natija!
+          </span>
+        </div>
+
+        <h2 id="result-greeting" class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
+          Tabriklaymiz!
+        </h2>
+        <p id="result-subtitle" class="text-sm sm:text-base text-slate-600 dark:text-slate-300 mt-1.5 max-w-xl mx-auto">
+          Siz barcha savollarni muvaffaqiyatli yakunladingiz.
+        </p>
+
+        <!-- Animated Circular SVG Percentage Ring -->
+        <div class="my-7 flex justify-center">
+          <div class="relative w-44 h-44 sm:w-48 sm:h-48">
+            <svg class="w-full h-full -rotate-90" viewBox="0 0 180 180">
+              <circle cx="90" cy="90" r="76" fill="none" stroke="currentColor" class="text-slate-200 dark:text-slate-800" stroke-width="14"></circle>
+              <circle id="result-ring-progress" cx="90" cy="90" r="76" fill="none" stroke="url(#ringGradient)" stroke-width="14" stroke-linecap="round" stroke-dasharray="477.52" stroke-dashoffset="477.52"></circle>
+              <defs>
+                <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#14b8a6" />
+                  <stop offset="50%" stop-color="#10b981" />
+                  <stop offset="100%" stop-color="#06b6d4" />
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <span id="result-percent" class="text-4xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tabular-nums">0%</span>
+              <span id="result-score-fraction" class="text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400 mt-1">0 / 0 ball</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 Metric Stat Cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-left">
+          <div class="p-4 rounded-2xl bg-slate-100/80 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/60">
+            <div class="text-xs font-semibold text-slate-500 dark:text-slate-400">Umumiy ball</div>
+            <div id="stat-total-score" class="text-xl font-extrabold text-slate-900 dark:text-white mt-1 tabular-nums">0 / 0</div>
+          </div>
+          <div class="p-4 rounded-2xl bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60">
+            <div class="text-xs font-semibold text-emerald-700 dark:text-emerald-400">To‘g‘ri javoblar</div>
+            <div id="stat-correct" class="text-xl font-extrabold text-emerald-700 dark:text-emerald-300 mt-1 tabular-nums">0</div>
+          </div>
+          <div class="p-4 rounded-2xl bg-rose-50/90 dark:bg-rose-950/40 border border-rose-200/80 dark:border-rose-800/60">
+            <div class="text-xs font-semibold text-rose-700 dark:text-rose-400">Xato javoblar</div>
+            <div id="stat-wrong" class="text-xl font-extrabold text-rose-700 dark:text-rose-300 mt-1 tabular-nums">0</div>
+          </div>
+          <div class="p-4 rounded-2xl bg-cyan-50/90 dark:bg-cyan-950/40 border border-cyan-200/80 dark:border-cyan-800/60">
+            <div class="text-xs font-semibold text-cyan-700 dark:text-cyan-400">Sarflangan vaqt</div>
+            <div id="stat-time" class="text-xl font-extrabold text-cyan-700 dark:text-cyan-300 mt-1 tabular-nums">00:00</div>
+          </div>
+        </div>
+
+        <!-- Primary Result Action Buttons -->
+        <div class="mt-7 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
+          <button id="retry-mistakes-btn" type="button"
+            class="hidden px-6 py-4 rounded-2xl bg-gradient-to-r from-rose-500 to-orange-500 hover:from-rose-400 hover:to-orange-400 text-white font-extrabold text-sm sm:text-base shadow-lg shadow-rose-500/25 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="1 4 1 10 7 10"></polyline>
+              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+            </svg>
+            <span id="retry-mistakes-label">Xato qilingan savollarni qayta ishlash</span>
+          </button>
+
+          <button id="new-test-btn" type="button"
+            class="px-6 py-4 rounded-2xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white font-extrabold text-sm sm:text-base shadow-lg shadow-teal-600/25 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>Yangi test boshlash</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Review Mistakes Collapsible / Tabbed Section -->
+      <div id="review-section-card" class="glass-card rounded-3xl overflow-hidden">
+        <button id="toggle-review-btn" type="button"
+          class="w-full p-5 sm:p-6 flex items-center justify-between gap-4 text-left hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors cursor-pointer">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white">
+                Xatolarni ko‘rib chiqish
+              </h3>
+              <p id="review-subtitle" class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                Noto‘g‘ri javob berilgan savollar va ularning to‘g‘ri yechimi
+              </p>
+            </div>
+          </div>
+          <svg id="review-chevron" class="w-5 h-5 text-slate-500 transition-transform duration-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+
+        <div id="review-panel" class="hidden border-t border-slate-200/70 dark:border-slate-700/60 p-5 sm:p-6 space-y-4">
+          <!-- Review Filter Tabs -->
+          <div class="flex flex-wrap gap-2">
+            <button id="tab-mistakes" type="button" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer">
+              Faqat xatolar (<span id="tab-mistakes-count">0</span>)
+            </button>
+            <button id="tab-all" type="button" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer">
+              Barcha ishlanganlar (<span id="tab-all-count">0</span>)
+            </button>
+          </div>
+
+          <!-- Review List -->
+          <div id="review-list" class="space-y-3.5 max-h-[65vh] overflow-y-auto pr-1">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Custom Confirmation Modal (No browser confirm/alert) -->
+  <div id="confirm-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
+    <div class="glass-card rounded-3xl max-w-md w-full p-6 space-y-5 animate-pop-in bg-white dark:bg-slate-900">
+      <div class="flex items-start gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-lg font-extrabold text-slate-900 dark:text-white">Testni yakunlaysizmi?</h3>
+          <p id="confirm-modal-desc" class="text-sm text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
+            Hali javob berilmagan savollar bor. Testni hozir yakunlasangiz, natijangiz shu paytgacha berilgan javoblar asosida hisoblanadi.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-2">
+        <button id="modal-cancel-btn" type="button"
+          class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-bold transition-colors cursor-pointer">
+          Davom ettirish
+        </button>
+        <button id="modal-confirm-btn" type="button"
+          class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm font-bold shadow-md shadow-rose-600/25 transition-colors cursor-pointer">
+          Ha, yakunlash
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- COMPLETE JAVASCRIPT LOGIC & ALL 96 QUESTIONS DATASET      -->
+  <!-- ========================================================= -->
+  <script>
+    /**
+     * COMPLETE DATASET: ALL 96 OFFICIAL QUESTIONS
+     * Categories:
+     *  - "DMED tizimi" (1–50)
+     *  - "Kompyuter va OS" (51–57)
+     *  - "Microsoft Word" (58–72)
+     *  - "Microsoft Excel" (73–82)
+     *  - "Microsoft PowerPoint" (83–89)
+     *  - "Internet asoslari" (90–96)
+     */
+    const QUESTIONS = [
+      // ===================== DMED TIZIMI (1–50) =====================
+      {
+        id: 1,
+        category: "DMED tizimi",
+        q: "DMED tizimida avtorizatsiya qanday amalga oshiriladi?",
+        correct: "Foydalanuvchi logini va paroli orqali amalga oshiriladi",
+        distractors: [
+          "Faqat bemorning tug'ilganlik haqidagi guvohnoma raqami orqali",
+          "Hech qanday parolsiz, faqat kompyuterning IP-manzili orqali",
+          "Poliklinika muhrini skanerlash va suratga tushirish orqali"
+        ]
+      },
+      {
+        id: 2,
+        category: "DMED tizimi",
+        q: "DMED tizimini joriy etishning asosiy vazifalari qanday?",
+        correct: "Tibbiy ma'lumotlarni markazlashtirish, ish jarayonini avtomatlashtirish va bemorlar hisobini yuritish",
+        distractors: [
+          "Faqat dori-darmonlarni onlayn sotish va yetkazib berish xizmatini yo'lga qo'yish",
+          "Shifoxona binolarining kommunal to'lovlari va ta'mirlash smetasini hisoblash",
+          "Tibbiyot xodimlarining faqat ishga kelib-ketish vaqtini videokuzatuv orqali tekshirish"
+        ]
+      },
+      {
+        id: 3,
+        category: "DMED tizimi",
+        q: "DMED qo'llab-quvvatlash xizmati bilan qanday usullar orqali bog'lanish mumkin?",
+        correct: "Telefon raqamlari, veb-sayt va rasmiy messenjer botlari orqali",
+        distractors: [
+          "Faqat pochta orqali buyurtma xat yuborish yo'li bilan",
+          "Faqat viloyat sog'liqni saqlash boshqarmasiga shaxsan tashrif buyurib",
+          "Qo'llab-quvvatlash xizmati mavjud emas, barcha muammolar mustaqil hal qilinadi"
+        ]
+      },
+      {
+        id: 4,
+        category: "DMED tizimi",
+        q: "Bemor qaysi mobil ilova orqali shifokorga yozilishi mumkin?",
+        correct: "'Yagona xalq maslahat' yoki 'Sog'liqni saqlash vazirligi' (DMED) mobil ilovalari orqali",
+        distractors: [
+          "Faqat 'Soliq' va bank to'lov mobil ilovalari orqali",
+          "Faqat ijtimoiy tarmoqlarning umumiy chat guruhlari orqali",
+          "Mobil ilova orqali shifokorga yozilish imkoniyati tizimda ko'zda tutilmagan"
+        ]
+      },
+      {
+        id: 5,
+        category: "DMED tizimi",
+        q: "DMED tizimida bemorning yagona identifikatori (Med ID) qanday beriladi?",
+        correct: "Bemorni ro'yxatdan o'tkazishda uning shaxsiy ma'lumotlari asosida takrorlanmas Med ID shakllantiriladi",
+        distractors: [
+          "Har bir poliklinikaga borganida bemorga alohida yangi Med ID beriladi",
+          "Bemor o'zi xohlagan raqamlar ketma-ketligini qo'lda tanlab kiritadi",
+          "Med ID faqat statsionarga yotqizilgan bemorlarga bo'lim mudiri tomonidan yoziladi"
+        ]
+      },
+      {
+        id: 6,
+        category: "DMED tizimi",
+        q: "Bemor o'zini poliklinikaga mustaqil ravishda biriktirishi mumkinmi?",
+        correct: "Ha, bemor mobil ilova yoki veb-sayt orqali poliklinikaga mustaqil ravishda biriktirilishi mumkin",
+        distractors: [
+          "Yo'q, biriktirish faqat mahalla raisining qog'oz ma'lumotnomasi bilan amalga oshiriladi",
+          "Faqat 60 yoshdan oshgan bemorlarga mustaqil biriktirishga ruxsat beriladi",
+          "Yo'q, bu amalni faqat Sog'liqni saqlash vazirligi markaziy operatori bajaradi"
+        ]
+      },
+      {
+        id: 7,
+        category: "DMED tizimi",
+        q: "DMED tizimida rasmiy hujjat aylanishi reestri sifatida qaysi internet-manba ishlatiladi?",
+        correct: "DMED rasmiy veb-portali va hujjatlar bazasi (dmed.uz)",
+        distractors: [
+          "Ochiq qidiruv tizimlari va erkin ensiklopediya sahifalari",
+          "Shaxsiy elektron pochta qutilari va bulutli disklar",
+          "Faqat hududiy poliklinikalarning ichki Telegram kanallari"
+        ]
+      },
+      {
+        id: 8,
+        category: "DMED tizimi",
+        q: "DMED tizimida qanday maxfiylik turi mavjud?",
+        correct: "Rollarga asoslangan kirish huquqi va bemor shaxsiy ma'lumotlarini (shifokor sirini) himoyalash",
+        distractors: [
+          "Barcha bemorlarning tashxislari hamma foydalanuvchilar uchun ochiq ko'rinadi",
+          "Tizimda faqat muassasa moliyaviy hujjatlari himoyalanadi, tibbiy kartalar ochiq bo'ladi",
+          "Maxfiylik faqat xususiy klinikalarda qo'llaniladi, davlat muassasalarida mavjud emas"
+        ]
+      },
+      {
+        id: 9,
+        category: "DMED tizimi",
+        q: "Bemor birinchi marta DTMga murojaat qilganda qabulga yozish qanday amalga oshiriladi?",
+        correct: "Bemor avval shaxsiy ma'lumotlari asosida tizimda ro'yxatdan o'tkaziladi (Med ID beriladi), so'ng qabulga yoziladi",
+        distractors: [
+          "Ro'yxatdan o'tkazmasdan to'g'ridan-to'g'ri shifokor xonasiga qog'oz talon beriladi",
+          "Avval laboratoriya tahlillari topshiriladi, keyin bir hafta o'tib tizimga kiritiladi",
+          "Birinchi tashrifda bemor DMED tizimiga kiritilmaydi, faqat daftarga qayd etiladi"
+        ]
+      },
+      {
+        id: 10,
+        category: "DMED tizimi",
+        q: "Bemorni qayta qabulga yozish uchun qanday ma'lumotlar zarur?",
+        correct: "Med ID, bemorning F.I.Sh. va yozilishi kerak bo'lgan mutaxassis ma'lumotlari",
+        distractors: [
+          "Bemorning ish joyidan ma'lumotnoma va oylik ish haqi to'g'risidagi hujjat",
+          "Qayta qabulda barcha shaxsiy hujjatlar va suratni noldan qayta kiritish shart",
+          "Faqat bemorning avvalgi dori cheklari va yashash joyi kadastr raqami"
+        ]
+      },
+      {
+        id: 11,
+        category: "DMED tizimi",
+        q: "Birinchi tashrif paytida bemorning rasmini qanday to'g'ri olish kerak?",
+        correct: "Bemorni identifikatsiya qilish uchun shaxsni tasdiqlovchi hujjatdan foydalanib, aniq rasmini olish kerak",
+        distractors: [
+          "Bemorni yon tomondan (profil holatda) tibbiy niqob bilan suratga olish kerak",
+          "Rasm olish shart emas, uning o'rniga istalgan standart belgi qo'yiladi",
+          "Faqat bemorning qo'l barmoq izini skanerlash kifoya, rasm talab qilinmaydi"
+        ]
+      },
+      {
+        id: 12,
+        category: "DMED tizimi",
+        q: "Hujjatlari yo'q bemorni qo'shishda qaysi maydonlarni to'ldirish kerak?",
+        correct: "Majburiy maydonlar: F.I.Sh., tug'ilgan sanasi, jinsi va yashash manzili",
+        distractors: [
+          "Faqat bemorning taxminiy yoshi va telefon raqami kiritiladi",
+          "Hujjatlari yo'q bemorni tizimga kiritish qat'iyan taqiqlanadi",
+          "Faqat pasport seriyasi va JSHSHIR maydoniga nollar yozib saqlanadi"
+        ]
+      },
+      {
+        id: 13,
+        category: "DMED tizimi",
+        q: "Tizimda xorijiy bemor (norezident)ni qidirish qanday ma'lumotlar bo'yicha amalga oshiriladi?",
+        correct: "Pasport seriyasi va raqami, tug'ilgan sanasi kabi ma'lumotlar bo'yicha",
+        distractors: [
+          "Faqat O'zbekiston fuqarolarining JSHSHIR raqami orqali",
+          "Faqat viza raqami va aeroportdan kirish chiptasi kodi bo'yicha",
+          "Xorijiy bemorlarni DMED tizimida qidirish imkoniyati mavjud emas"
+        ]
+      },
+      {
+        id: 14,
+        category: "DMED tizimi",
+        q: "'Qabullar-Aktiv' bo'limida bemorlarning qanday statuslari mavjud?",
+        correct: "'Ro'yxatda', 'Qabulda', 'Tugallangan', 'Bekor qilingan' kabi statuslar",
+        distractors: [
+          "'To'langan', 'Qarzdor', 'Chegirmada', 'Arxivda' kabi moliyaviy statuslar",
+          "'Yangi xodim', 'Ta'tilda', 'Xizmat safarida' kabi kadrlar statuslari",
+          "Bu bo'limda bemorlarga hech qanday status biriktirilmaydi"
+        ]
+      },
+      {
+        id: 15,
+        category: "DMED tizimi",
+        q: "Reimbursatsiya va oddiy retsept o'rtasida qanday farq bor?",
+        correct: "Reimbursatsiya retseptida dorilarning narxi davlat tomonidan qisman yoki to'liq qoplanadi",
+        distractors: [
+          "Reimbursatsiya retsepti faqat vitaminlar va kosmetik vositalar uchun yoziladi",
+          "Oddiy retsept elektron ko'rinishda, reimbursatsiya retsepti esa faqat qo'lda yoziladi",
+          "Reimbursatsiya retsepti faqat xususiy dorixonalarda chegirmasiz sotib olinadi"
+        ]
+      },
+      {
+        id: 16,
+        category: "DMED tizimi",
+        q: "Reimbursatsiya retseptida 'Tabletkalar' chiqarish shakli bo'lgan preparatni bemorga qancha miqdorda yozish mumkin?",
+        correct: "Bemorga bir marta belgilangan norma (me'yor) miqdorida yozish mumkin",
+        distractors: [
+          "Cheklanmagan miqdorda, bir yillik zaxira sifatida darhol yozish mumkin",
+          "Faqat 1 dona qadoqdan oshmaydigan qilib, dozasi ko'rsatilmasdan yoziladi",
+          "Reimbursatsiya retseptida tabletkalar shaklini yozishga ruxsat etilmaydi"
+        ]
+      },
+      {
+        id: 17,
+        category: "DMED tizimi",
+        q: "Shifokor yoki amaliyotchi hamshira bemorni ko'rigini boshlash uchun qanday harakatlarni qilishi kerak?",
+        correct: "Bemorning Med IDsi orqali profilini topib, qabul (ko'rik) bo'limiga o'tishi kerak",
+        distractors: [
+          "Bemor uchun tizimda har safar yangi foydalanuvchi hisobini yaratishi kerak",
+          "Bosh shifokordan og'zaki ruxsat olib, faqat qog'oz jurnalni ochishi kerak",
+          "Tizimdan chiqib, mehmon rejimida qayta avtorizatsiyadan o'tishi kerak"
+        ]
+      },
+      {
+        id: 18,
+        category: "DMED tizimi",
+        q: "Shifokor boshqa mutaxassisga yozilgan bemorni qabul qila oladimi?",
+        correct: "Yo'q, qabul qila olmaydi, chunki u shifokorning o'z jadvalida ko'rinmaydi",
+        distractors: [
+          "Ha, istalgan shifokor boshqa bo'lim bemorlarini hech qanday qayta yozuvsiz qabul qiladi",
+          "Ha, faqat tushlik vaqtidan keyin barcha jadvallar umumiy bo'lib ochiladi",
+          "Faqat bemor qo'shimcha ariza yozsa, boshqa shifokorning jadvaliga avtomatik o'tadi"
+        ]
+      },
+      {
+        id: 19,
+        category: "DMED tizimi",
+        q: "Bemorni vaqtga emas, balki jonli navbatga yozish mumkinmi? Masalan, vaqtga barcha yozuvlar band bo'lsa.",
+        correct: "Ha, bemorni jonli navbatga yozish imkoniyati mavjud",
+        distractors: [
+          "Yo'q, barcha vaqtlar band bo'lsa, bemorni tizimga kiritish umuman bloklanadi",
+          "Faqat shoshilinch tez yordam mashinasida kelgan bemorlar jonli navbatga yoziladi",
+          "Jonli navbat faqat hafta oxiri va bayram kunlarida faollashadi"
+        ]
+      },
+      {
+        id: 20,
+        category: "DMED tizimi",
+        q: "Shifokor ko'rik paytida bemorni boshqa mutaxassisga yo'naltira oladimi?",
+        correct: "Ha, boshqa mutaxassisga yo'naltirishi mumkin va uni jadvalda ko'ra oladi",
+        distractors: [
+          "Yo'q, yo'naltirish faqat qabulxona registratori tomonidan amalga oshiriladi",
+          "Yo'q, bemor ko'rikni tugatib, uyidan qayta onlayn navbat olishi shart",
+          "Faqat bo'lim mudiri ruxsati bilan haftasiga bir marta yo'naltirish mumkin"
+        ]
+      },
+      {
+        id: 21,
+        category: "DMED tizimi",
+        q: "Qanday davolash turi bilan yo'naltirish uchun direktor tasdig'i kerak emas?",
+        correct: "Ba'zi rejali (oddiy ambulator) davolash turlari bilan yo'naltirish uchun direktor tasdig'i kerak bo'lmaydi",
+        distractors: [
+          "Yuqori texnologiyali orderli operatsiyalar uchun tasdiq talab etilmaydi",
+          "Barcha turdagi yo'naltirishlar istisnosiz direktor tomonidan ERI bilan tasdiqlanadi",
+          "Faqat xorijiy klinikalarga yuboriladigan bemorlar uchun direktor tasdig'i kerak emas"
+        ]
+      },
+      {
+        id: 22,
+        category: "DMED tizimi",
+        q: "Gospitalizatsiya yo'naltirishisiz bemorni statsionarga rasmiylashtirish mumkinmi?",
+        correct: "Yo'q, gospitalizatsiya yo'naltirishisiz bemorni statsionarga rasmiylashtirish mumkin emas, tasdiqlash zarur",
+        distractors: [
+          "Ha, istalgan bemor shaxsiy istagi bilan yo'llanmasiz statsionarga rasmiylashtiriladi",
+          "Ha, faqat hamshira og'zaki kiritishi orqali rasmiylashtirish yetarli",
+          "Faqat bemorning qarindoshlari rozilik xati yozsa, yo'naltirish shart emas"
+        ]
+      },
+      {
+        id: 23,
+        category: "DMED tizimi",
+        q: "Bemor profilida qanday ma'lumotlarni ko'rish mumkin?",
+        correct: "Shaxsiy ma'lumotlari, ko'riklar tarixi, tashxislari, retseptlari va tahlillarini ko'rish mumkin",
+        distractors: [
+          "Faqat bemorning familiyasi, ismi va oxirgi tashrif sanasini ko'rish mumkin",
+          "Faqat bemorning bank kartalari va sug'urta to'lovlari tarixini ko'rish mumkin",
+          "Bemor profilida tahlil va retseptlar ko'rinmaydi, ular alohida dasturda saqlanadi"
+        ]
+      },
+      {
+        id: 24,
+        category: "DMED tizimi",
+        q: "O'tkazilgan skrining ma'lumotlarini tahrirlash mumkinmi?",
+        correct: "Yo'q, o'tkazilgan skrining ma'lumotlarini keyin tahrirlash imkoniyati mavjud emas, qayta kiritish kerak",
+        distractors: [
+          "Ha, istalgan xodim 30 kun ichida skrining natijalarini erkin o'zgartira oladi",
+          "Ha, bemor mobil ilova orqali o'z skrining ko'rsatkichlarini tahrirlay oladi",
+          "Faqat laborant skrining ma'lumotlarini o'chirib, yangidan yozishi mumkin"
+        ]
+      },
+      {
+        id: 25,
+        category: "DMED tizimi",
+        q: "Bemorning antropometrik ma'lumotlari qayerga kiritiladi?",
+        correct: "Bemor profilining 'Antropometriya' bo'limiga kiritiladi",
+        distractors: [
+          "Muassasaning umumiy 'Dorixona va ombor' bo'limiga kiritiladi",
+          "Faqat 'Reimbursatsiya retseptlari' oynasining izoh qismiga yoziladi",
+          "'Xodimlar jadvali' bo'limidagi kunlik hisobotga kiritiladi"
+        ]
+      },
+      {
+        id: 26,
+        category: "DMED tizimi",
+        q: "Shifokor bemorning ko'rik tarixini ko'ra oladimi?",
+        correct: "Ha, shifokor bemorning ko'rik tarixini Med ID orqali bemor profilida ko'ra oladi",
+        distractors: [
+          "Yo'q, har bir shifokor faqat o'zi o'tkazgan oxirgi bitta ko'rikni ko'ra oladi",
+          "Yo'q, ko'riklar tarixi 24 soatdan keyin tizimdan avtomatik o'chiriladi",
+          "Faqat bemorning qog'oz ambulator kartasini olib kelgan taqdirda ko'rish mumkin"
+        ]
+      },
+      {
+        id: 27,
+        category: "DMED tizimi",
+        q: "Xodimlardan kimlar reimbursatsiya retseptlarini yoza oladi?",
+        correct: "Faqat tizimda ruxsati bor oilaviy shifokorlar va tor mutaxassislar yozadi",
+        distractors: [
+          "Poliklinikaning barcha xodimlari, jumladan registrator va xo'jalik mudiri",
+          "Faqat laboratoriya xodimlari va sterilizatsiya bo'limi hamshiralari",
+          "Faqat dorixona provizorlari bemorning so'roviga asosan yozadi"
+        ]
+      },
+      {
+        id: 28,
+        category: "DMED tizimi",
+        q: "Bemorni patronaj rejasiga qo'shish uchun qanday harakatlarni qilish kerak?",
+        correct: "Bemor profiliga kirib, 'Patronaj' bo'limidan reja tanlanadi va qo'shish tugmasi bosiladi",
+        distractors: [
+          "Bemorning 'Hisobotlar' bo'limidan statistik fayl yuklab olinadi",
+          "Patronaj rejasi tizimga kiritilmaydi, faqat uchastka daftariga yoziladi",
+          "Bemor o'zi mobil ilovadan patronaj hamshirasini chaqirib reja tuzadi"
+        ]
+      },
+      {
+        id: 29,
+        category: "DMED tizimi",
+        q: "Bemorga bir vaqtning o'zida bir nechta analizni tayinlash mumkinmi?",
+        correct: "Ha, bir vaqtning o'zida bir nechta laboratoriya va diagnostika analizlarini tayinlash mumkin",
+        distractors: [
+          "Yo'q, bitta qabul davomida bemorga faqat bitta analiz tayinlashga ruxsat beriladi",
+          "Yo'q, ikkinchi analizni faqat birinchisining natijasi chiqqandan keyin yozish mumkin",
+          "Bir nechta analiz faqat statsionar bemorlarga tayinlanadi, poliklinikada mumkin emas"
+        ]
+      },
+      {
+        id: 30,
+        category: "DMED tizimi",
+        q: "Fizioterapevtik kursni qo'shish uchun nima qilish kerak?",
+        correct: "Shifokor ko'rigi orqali yo'llanma yaratish va fizioterapiya xizmatlarini tanlash kerak",
+        distractors: [
+          "Bemorning 'Antropometriya' bo'limida bo'y va vazn ko'rsatkichlarini o'zgartirish kerak",
+          "Registratura bo'limida yangi Med ID ochib, fizioterapiya xonasiga yuborish kerak",
+          "Faqat ombor bo'limidan kerakli uskunani bemor nomiga rasmiylashtirish kerak"
+        ]
+      },
+      {
+        id: 31,
+        category: "DMED tizimi",
+        q: "Bemorning tibbiy kartasidagi 'Joriy ko'rik' bo'limida 'Homiladorlik (Hisobga olish)' murojaat epizodi avtomatik yaratilishi uchun nima qilish kerak?",
+        correct: "Homiladorlik ko'rsatkichlari va statusi kiritilib, epizodga bog'langan holda saqlanadi",
+        distractors: [
+          "Faqat bemorning jinsi maydonini o'zgartirish va sahifani yangilash kifoya",
+          "Bu epizod tizimda avtomatik yaratilmaydi, faqat bosh shifokor qo'lda ochadi",
+          "Bemorni zudlik bilan gospitalizatsiya bo'limiga yo'naltirish kerak"
+        ]
+      },
+      {
+        id: 32,
+        category: "DMED tizimi",
+        q: "Biksni qayta sterilizatsiyaga yuborish mumkinmi?",
+        correct: "Ha, sterilizatsiya muddati o'tgan yoki qadog'i buzilgan bikslarni qayta yuborish mumkin",
+        distractors: [
+          "Yo'q, bir marta sterilizatsiya qilingan biks ikkinchi marta ishlatilmaydi",
+          "Faqat yangi sotib olingan bikslar tizimda sterilizatsiyaga yuboriladi",
+          "Bikslarni qayta sterilizatsiyaga yuborish tizimda hisobga olinmaydi"
+        ]
+      },
+      {
+        id: 33,
+        category: "DMED tizimi",
+        q: "Bemorga qanday sog'liq guruhlarini ko'rsatish mumkin?",
+        correct: "Salomatlik guruhlari (I, II, III, IV guruhlar) bemorning surunkali kasalliklariga qarab belgilanadi",
+        distractors: [
+          "Faqat 'Sog'lom' va 'Bemor' degan ikkita umumiy guruh belgilanadi",
+          "Bemorning yoshiga qarab 10 dan 100 gacha bo'lgan ball tizimi kiritiladi",
+          "Salomatlik guruhlari faqat maktabgacha yoshdagi bolalar uchun ko'rsatiladi"
+        ]
+      },
+      {
+        id: 34,
+        category: "DMED tizimi",
+        q: "Tizimga yangi foydalanuvchi qanday qo'shiladi?",
+        correct: "'Xodimlar' yoki 'Foydalanuvchilar' bo'limida yangi ma'lumotlar va ERI kalitini kiritish orqali",
+        distractors: [
+          "Har bir xodim o'z telefonidan mustaqil ro'yxatdan o'tib, istalgan rolni tanlaydi",
+          "Yangi foydalanuvchi 'Bemorlar ro'yxati' bo'limi orqali Med ID bilan qo'shiladi",
+          "Tizimga yangi xodim qo'shish uchun dasturni kompyuterga qaytadan o'rnatish kerak"
+        ]
+      },
+      {
+        id: 35,
+        category: "DMED tizimi",
+        q: "Bitta xodimga bir nechta rolni biriktirish mumkinmi?",
+        correct: "Ha, bitta xodimga tizimda bir nechta ruxsat etilgan rollarni (shifokor, mudir va h.k.) biriktirish mumkin",
+        distractors: [
+          "Yo'q, tizimda bir xodimga qat'iy faqat bitta rol biriktiriladi",
+          "Ikkinchi rol uchun xodimga alohida boshqa login va parol ochish majburiy",
+          "Bir nechta rol faqat texnik administratorlarga beriladi, tibbiyot xodimlariga emas"
+        ]
+      },
+      {
+        id: 36,
+        category: "DMED tizimi",
+        q: "Jurnallarni qaysi bo'limda ko'rish mumkin?",
+        correct: "'Jurnallar' yoki 'Hisobotlar' bo'limida ko'rish mumkin",
+        distractors: [
+          "Faqat bemorning 'Antropometriya' oynasi ichida ko'rish mumkin",
+          "'Sozlamalar -> Parolni almashtirish' bo'limida joylashgan",
+          "DMED tizimida elektron jurnallar mavjud emas, ular faqat qog'ozda yuritiladi"
+        ]
+      },
+      {
+        id: 37,
+        category: "DMED tizimi",
+        q: "Tizimda avtomatik shakllantirilgan jurnallardagi ma'lumotlar qancha tez-tez yangilanadi?",
+        correct: "Ma'lumotlar real vaqt rejimida yoki har bir necha daqiqada avtomatik yangilanadi",
+        distractors: [
+          "Faqat har oyning oxirgi ish kunida qo'lda yangilanadi",
+          "Har yili bir marta statistik hisobot topshirish oldidan yangilanadi",
+          "Jurnallar avtomatik yangilanmaydi, har bir qatorni hamshira ko'chirib yozadi"
+        ]
+      },
+      {
+        id: 38,
+        category: "DMED tizimi",
+        q: "Natijasi kiritilgan analizni bekor qilish mumkinmi?",
+        correct: "Faqat tahlil hali bajarilmagan va laborant tomonidan tasdiqlanmagan bo'lsa, bekor qilish mumkin",
+        distractors: [
+          "Ha, tasdiqlangan tahlil natijasini ham istalgan vaqtda bemor o'chirib tashlay oladi",
+          "Yo'q, hatto xato tayinlangan va hali topshirilmagan analizni ham bekor qilib bo'lmaydi",
+          "Ha, natija kiritilgandan so'ng 7 kun davomida registrator bekor qilishi mumkin"
+        ]
+      },
+      {
+        id: 39,
+        category: "DMED tizimi",
+        q: "Hamshiraga qanday bo'limlar ochiq?",
+        correct: "Qabul, patronaj, muolaja va antropometriya bo'limlari ochiq bo'ladi",
+        distractors: [
+          "Faqat muassasa moliyaviy hisobotlari va xodimlarga oylik hisoblash bo'limlari",
+          "Faqat tizim administratorining server sozlamalari va foydalanuvchilarni o'chirish bo'limi",
+          "Hamshiralarga DMED tizimida faqat o'qish rejimi ochiq, ma'lumot kiritish yopiq"
+        ]
+      },
+      {
+        id: 40,
+        category: "DMED tizimi",
+        q: "Davolash kursi paytida preparatga allergik reaktsiya ko'rsatilgandan so'ng amalni bekor qilish mumkinmi?",
+        correct: "Ha, allergik reaksiya qayd etilsa, muolaja yoki dorini darhol to'xtatish va bekor qilish kerak",
+        distractors: [
+          "Yo'q, tayinlangan davolash kursi har qanday holatda oxirigacha bajarilishi shart",
+          "Allergik reaksiya tizimda qayd etilmaydi, faqat og'zaki ogohlantiriladi",
+          "Bekor qilish uchun avval butun kasallik tarixini tizimdan o'chirish lozim"
+        ]
+      },
+      {
+        id: 41,
+        category: "DMED tizimi",
+        q: "Agar shifokor murojaat epizodidan bemorni gospitalizatsiyaga yo'naltirsa, nimani qilmaganda u gospitalizatsiya yo'naltirishini yarata olmaydi?",
+        correct: "Yo'naltirish sababi va maqsadini aniq belgilab, tasdiqlamasdan turib yarata olmaydi",
+        distractors: [
+          "Bemorning yaqin qarindoshlaridan uch kishining telefon raqamini kiritmasdan turib",
+          "Bemorga kamida uchta reimbursatsiya retsepti yozib bermasdan turib",
+          "Bemorning avvalgi barcha poliklinika tashriflarini o'chirib tashlamasdan turib"
+        ]
+      },
+      {
+        id: 42,
+        category: "DMED tizimi",
+        q: "Yo'naltirish yaratishda bir nechta gospitalizatsiya maqsadini tanlash mumkinmi?",
+        correct: "Yo'q, har bir alohida gospitalizatsiya uchun alohida maqsad va yo'naltirish yaratiladi",
+        distractors: [
+          "Ha, bitta yo'naltirish ichida bir yo'la beshtagacha maqsadni belgilash mumkin",
+          "Ha, faqat tungi navbatchilik vaqtida bir nechta maqsad tanlash ochiladi",
+          "Gospitalizatsiya maqsadini tanlash majburiy emas, bo'sh qoldirish mumkin"
+        ]
+      },
+      {
+        id: 43,
+        category: "DMED tizimi",
+        q: "Poliklinikadan gospitalizatsiyaga yo'naltirilgan bemorlar tizimning qaysi bo'limiga tushadi?",
+        correct: "'Yo'llanmalar' yoki 'Gospitalizatsiya uchun navbat' bo'limiga tushadi",
+        distractors: [
+          "'Patronaj rejasi' va 'Emlash kalendari' bo'limiga tushadi",
+          "'Sterilizatsiya va bikslar hisobi' bo'limiga tushadi",
+          "'Arxivlangan bemorlar' ro'yxatiga avtomatik o'tkaziladi"
+        ]
+      },
+      {
+        id: 44,
+        category: "DMED tizimi",
+        q: "Shifokor qaysi statsionar ko'rigini faqat bir marta o'tkazishi mumkin?",
+        correct: "Statsionar ko'rikni faqat qabul bo'limida bemor kelganda bir marta o'tkazish mumkin",
+        distractors: [
+          "Kunlik kundalik (obxod) ko'rigini butun davolanish davomida faqat bir marta o'tkazadi",
+          "Laboratoriya tahlillarini ko'rish amalini faqat bir marta bajarish mumkin",
+          "Barcha statsionar ko'riklar cheksiz marta bir xil statusda takrorlanadi"
+        ]
+      },
+      {
+        id: 45,
+        category: "DMED tizimi",
+        q: "Bemorni statsionarga rasmiylashtirganda nima avtomatik ochiladi?",
+        correct: "Avtomatik tarzda kasallik tarixi (tarix varaqasi) va bemorning statsionar kartasi ochiladi",
+        distractors: [
+          "Avtomatik tarzda bemorning poliklinikaga biriktiruvi bekor qilinadi",
+          "Bemor nomiga yangi reimbursatsiya dorixona hisobvarag'i ochiladi",
+          "Hech narsa avtomatik ochilmaydi, barcha formalarni hamshira Wordda yozadi"
+        ]
+      },
+      {
+        id: 46,
+        category: "DMED tizimi",
+        q: "Kasallik tarixida 096 formasini ochish uchun qanday amalni bajarish kerak?",
+        correct: "Kasallik tarixida statsionar ko'rik yakunlanib, kerakli tahrir va tashxislar tasdiqlanadi",
+        distractors: [
+          "Bemorning 'Antropometriya' ma'lumotlari to'liq o'chirilib, qayta kiritiladi",
+          "Tizimdan chiqib, 'Hisobotlar' menyusidan bo'sh shablon chop etiladi",
+          "096 formasi faqat laboratoriya mudiri tomonidan alohida dasturda ochiladi"
+        ]
+      },
+      {
+        id: 47,
+        category: "DMED tizimi",
+        q: "Bemorni statsionarning boshqa bo'limiga ko'chirish mumkinmi?",
+        correct: "Ha, shifokor tavsiyasi va bo'lim mudiri roziligi bilan boshqa bo'limga ko'chirish mumkin",
+        distractors: [
+          "Yo'q, ko'chirish uchun bemorni avval uyiga javob berib, qaytadan qabul qilish shart",
+          "Ha, bemor o'zi xohlagan bo'limga tizimda hech qanday roziliksiz o'ta oladi",
+          "Yo'q, statsionar bo'limi bir marta tanlangach, davolanish oxirigacha o'zgarmaydi"
+        ]
+      },
+      {
+        id: 48,
+        category: "DMED tizimi",
+        q: "Gospitalizatsiyani tugatish uchun qaysi hujjat mutlaqo to'ldirilishi kerak?",
+        correct: "Epikriz (yakuniy tibbiy xulosa) va kasallik tarixining barcha yopilish maydonlari",
+        distractors: [
+          "Faqat bemorning kelgan kunidagi dastlabki qabul taloni",
+          "Faqat dorixona omboridan olingan dori-darmonlar ro'yxati",
+          "Gospitalizatsiyani tugatish uchun hech qanday hujjat to'ldirish shart emas"
+        ]
+      },
+      {
+        id: 49,
+        category: "DMED tizimi",
+        q: "Hamshira qaysi omborning tovar qoldiqlarini ko'rib chiqishga ruxsati bor?",
+        correct: "Faqat o'zi biriktirilgan va ruxsat berilgan dorixona yoki ombor tovar qoldiqlarini ko'ra oladi",
+        distractors: [
+          "Respublikadagi barcha shifoxonalar va xususiy dorixonalarning ombor qoldiqlarini",
+          "Hamshiraga hech qanday ombor qoldiqlarini ko'rishga ruxsat berilmaydi",
+          "Faqat markaziy xo'jalik omborining qurilish materiallari qoldiqlarini"
+        ]
+      },
+      {
+        id: 50,
+        category: "DMED tizimi",
+        q: "Laborant tahlil natijalarini tizimga kiritgandan so'ng nima qilish kerak?",
+        correct: "Natijalarni tekshirib, 'Tasdiqlash' va shifokorga 'Yuborish' tugmasini bosish kerak",
+        distractors: [
+          "Natijalarni saqlamasdan oynani yopish va shifokorga telefon orqali aytish kerak",
+          "Natijani qog'ozga yozib, bemorning o'ziga registraturadan olib ketishini aytish kerak",
+          "Tahlilni 'Bekor qilish' tugmasini bosib, arxiv bo'limiga ko'chirish kerak"
+        ]
+      },
+
+      // ===================== KOMPYUTER VA OS (51–57) =====================
+      {
+        id: 51,
+        category: "Kompyuter va OS",
+        q: "Quyidagi qurilmalarning qaysi biri yordamida Internetga ulanish mumkin?",
+        correct: "Modem, router, Wi-Fi adapter yoki tarmoq kabeli",
+        distractors: [
+          "Printer, skaner yoki lazer ko'rsatkich",
+          "Klaviatura, sichqoncha yoki grafik planshet",
+          "Kolonka, mikrofon yoki veb-kamera"
+        ]
+      },
+      {
+        id: 52,
+        category: "Kompyuter va OS",
+        q: "Kursorni harakatlantirish uchun qaysi qurilma ishlatiladi?",
+        correct: "Sichqoncha (mouse) yoki noutbuklardagi sensorli panel",
+        distractors: [
+          "Printer yoki ko'p funksiyali chop etish qurilmasi",
+          "Ovoz kuchaytirgich (kolonka) yoki naushnik",
+          "Tarmoq routeri yoki tashqi qattiq disk"
+        ]
+      },
+      {
+        id: 53,
+        category: "Kompyuter va OS",
+        q: "Skanner nima?",
+        correct: "Qog'ozdagi matn va tasvirlarni raqamli (elektron) formatga o'tkazuvchi qurilma",
+        distractors: [
+          "Elektron hujjatlarni rangli yoki oq-qora qog'ozga chop etuvchi qurilma",
+          "Kompyuter ichidagi barcha hisoblashlarni bajaruvchi asosiy protsessor",
+          "Internet tezligini oshiruvchi va simsiz tarmoq tarqatuvchi qurilma"
+        ]
+      },
+      {
+        id: 54,
+        category: "Kompyuter va OS",
+        q: "Printer qaysi turga kiradi?",
+        correct: "Ma'lumotlarni qog'ozga chiqaruvchi (axborotni chiqarish) qurilmasiga",
+        distractors: [
+          "Axborotni kompyuterga qo'lda kiritish qurilmasiga",
+          "Ma'lumotlarni uzoq muddat saqlovchi ichki xotira qurilmasiga",
+          "Kompyuterni elektr tokidan himoyalovchi ta'minot blokiga"
+        ]
+      },
+      {
+        id: 55,
+        category: "Kompyuter va OS",
+        q: "Modem vazifasi nima?",
+        correct: "Kompyuterni telefon liniyasi yoki aloqa kanallari orqali Internetga bog'lash va signalni o'zgartirish",
+        distractors: [
+          "Kompyuter ekranidagi tasvir sifatini va yorqinligini boshqarish",
+          "Hujjatlarni viruslardan tozalash va operatsion tizimni yangilash",
+          "Matnli fayllarni avtomatik tarzda boshqa tillarga tarjima qilish"
+        ]
+      },
+      {
+        id: 56,
+        category: "Kompyuter va OS",
+        q: "Operatsion tizimning asosiy vazifalaridan biri nima?",
+        correct: "Kompyuter qurilmalarini boshqarish va foydalanuvchi bilan dasturlar o'rtasidagi aloqani ta'minlash",
+        distractors: [
+          "Faqat matnli hujjatlarni tahrirlash va jadvallarda hisob-kitob qilish",
+          "Kompyuter qismlarini changdan tozalash va sovutish tezligini o'chirish",
+          "Faqat internetdagi videolarni yuklab olish va saqlash"
+        ]
+      },
+      {
+        id: 57,
+        category: "Kompyuter va OS",
+        q: "Operatsion tizimlar turlariga misol keltiring.",
+        correct: "Windows, macOS, Linux, Android, iOS",
+        distractors: [
+          "Microsoft Word, Excel, PowerPoint, Paint",
+          "Google Chrome, Mozilla Firefox, Safari, Opera",
+          "Monitor, klaviatura, sichqoncha, skaner"
+        ]
+      },
+
+      // ===================== MICROSOFT WORD (58–72) =====================
+      {
+        id: 58,
+        category: "Microsoft Word",
+        q: "Microsoft Word dasturi nima uchun ishlatiladi?",
+        correct: "Matnli hujjatlarni yaratish, tahrirlash, formatlash va chop etish uchun",
+        distractors: [
+          "Murakkab moliyaviy elektron jadvallar va katta ma'lumotlar bazasini hisoblash uchun",
+          "3D kompyuter o'yinlarini dasturlash va video montaj qilish uchun",
+          "Kompyuter tarmog'ini sozlash va antivirus tekshiruvini o'tkazish uchun"
+        ]
+      },
+      {
+        id: 59,
+        category: "Microsoft Word",
+        q: "Wordda fayl kengaytmasi qanday?",
+        correct: ".docx (yoki eski versiyalarda .doc)",
+        distractors: [
+          ".xlsx (yoki eski versiyalarda .xls)",
+          ".pptx (yoki eski versiyalarda .ppt)",
+          ".mp3 yoki .avi"
+        ]
+      },
+      {
+        id: 60,
+        category: "Microsoft Word",
+        q: "Word dasturida yangi hujjat qanday yaratiladi?",
+        correct: "'Файл' -> 'Создать' (Yangi hujjat) buyrug'i yoki Ctrl + N tugmalari orqali",
+        distractors: [
+          "'Файл' -> 'Печать' buyrug'i yoki Ctrl + P tugmalari orqali",
+          "'Вид' -> 'Масштаб' bo'limi yoki Ctrl + Z tugmalari orqali",
+          "'Вставка' -> 'Рисунки' buyrug'i yoki Ctrl + F tugmalari orqali"
+        ]
+      },
+      {
+        id: 61,
+        category: "Microsoft Word",
+        q: "Ctrl + B tugmalari nima vazifa bajaradi?",
+        correct: "Tanlangan matnni qalin (bold) qilish vazifasini bajaradi",
+        distractors: [
+          "Hujjatdagi oxirgi o'zgarishni butunlay o'chirish vazifasini bajaradi",
+          "Matnni qiya (kursiv) ko'rinishga o'tkazish vazifasini bajaradi",
+          "Hujjatni chop etish oynasini ochish vazifasini bajaradi"
+        ]
+      },
+      {
+        id: 62,
+        category: "Microsoft Word",
+        q: "Wordda shrift (font) o'lchami qayerdan sozlanadi?",
+        correct: "'Главная' (Home) menyusidagi Shrift (Font) o'lchami oynasidan yoki Ctrl + Shift + P orqali",
+        distractors: [
+          "'Рецензирование' (Review) menyusidagi imlo tekshiruvi bo'limidan",
+          "'Рассылки' (Mailings) menyusidagi konvertlar bo'limidan",
+          "'Файл' -> 'Закрыть' (Yopish) menyusi orqali"
+        ]
+      },
+      {
+        id: 63,
+        category: "Microsoft Word",
+        q: "Sahifa raqamini qanday qo'shish mumkin?",
+        correct: "'Вставка' (Insert) -> 'Номер страницы' (Sahifa raqami) bo'limi orqali",
+        distractors: [
+          "'Главная' (Home) -> 'Вырезать' (Kesib olish) tugmasi orqali",
+          "'Файл' -> 'Сохранить как' (Boshqacha saqlash) oynasi orqali",
+          "'Рецензирование' -> 'Сравнить' (Taqqoslash) bo'limi orqali"
+        ]
+      },
+      {
+        id: 64,
+        category: "Microsoft Word",
+        q: "Ctrl + S tugmalari nima uchun ishlatiladi?",
+        correct: "Hujjatni xotiraga saqlash (Save) uchun ishlatiladi",
+        distractors: [
+          "Matn ichidan kerakli so'zni qidirish (Search) uchun ishlatiladi",
+          "Barcha matnni belgilash (Select All) uchun ishlatiladi",
+          "Hujjatni qog'ozga chop etish uchun ishlatiladi"
+        ]
+      },
+      {
+        id: 65,
+        category: "Microsoft Word",
+        q: "Wordda hujjatga rasmni qanday qo'shiladi?",
+        correct: "'Вставка' (Insert) -> 'Рисунки' (Rasm) buyrug'i orqali",
+        distractors: [
+          "'Макет' (Layout) -> 'Поля' (Hoshiyalar) bo'limi orqali",
+          "'Вид' (View) -> 'Сетка' (To'r) opsiyasi orqali",
+          "'Файл' -> 'Сведения' (Ma'lumotlar) oynasi orqali"
+        ]
+      },
+      {
+        id: 66,
+        category: "Microsoft Word",
+        q: "Ctrl + C va Ctrl + V nima vazifani bajaradi?",
+        correct: "Ctrl + C nusxalash (Copy), Ctrl + V esa joylashtirish (Paste) vazifasini bajaradi",
+        distractors: [
+          "Ctrl + C hujjatni yopish, Ctrl + V esa yangi sahifa ochish vazifasini bajaradi",
+          "Ctrl + C matnni qalin qilish, Ctrl + V esa tagiga chizish vazifasini bajaradi",
+          "Ctrl + C chop etish, Ctrl + V esa hujjatni parollash vazifasini bajaradi"
+        ]
+      },
+      {
+        id: 67,
+        category: "Microsoft Word",
+        q: "Word hujjatini qanday chop etiladi?",
+        correct: "'Файл' -> 'Печать' (Chop etish) yoki Ctrl + P tugmalari yordamida",
+        distractors: [
+          "'Вставка' -> 'Таблица' buyrug'i yoki Ctrl + T tugmalari yordamida",
+          "'Главная' -> 'Копировать' buyrug'i yoki Ctrl + C tugmalari yordamida",
+          "'Вид' -> 'Чтение' rejimi yoki F1 tugmasi yordamida"
+        ]
+      },
+      {
+        id: 68,
+        category: "Microsoft Word",
+        q: "Wordda jadval (table) qanday qo'shiladi?",
+        correct: "'Вставка' (Insert) -> 'Таблица' (Jadval) bo'limi orqali kerakli qator va ustunlarni tanlab",
+        distractors: [
+          "'Дизайн' (Design) -> 'Водяной знак' (Suv belgisi) bo'limi orqali",
+          "'Файл' -> 'Экспорт' (Eksport) menyusi orqali",
+          "'Главная' -> 'Заменить' (Almashtirish) tugmasini bosib"
+        ]
+      },
+      {
+        id: 69,
+        category: "Microsoft Word",
+        q: "Hujjatni qanday saqlash mumkin?",
+        correct: "'Файл' -> 'Сохранить' (Сохранить как...) yoki Ctrl + S tugmalari orqali",
+        distractors: [
+          "'Вставка' -> 'Символ' buyrug'i yoki Ctrl + X tugmalari orqali",
+          "'Макет' -> 'Ориентация' bo'limi yoki Ctrl + A tugmalari orqali",
+          "'Файл' -> 'Открыть' buyrug'i yoki Ctrl + O tugmalari orqali"
+        ]
+      },
+      {
+        id: 70,
+        category: "Microsoft Word",
+        q: "Qaysi menyuda 'Bold', 'Italic', 'Underline' opsiyalari mavjud?",
+        correct: "'Главная' (Home) menyusida (matnni qalin, og'ma va tagiga chizilgan qilish bo'limi)",
+        distractors: [
+          "'Рассылки' (Mailings) menyusining xat yuborish bo'limida",
+          "'Вид' (View) menyusining oyna ko'rinishi bo'limida",
+          "'Ссылки' (References) menyusining izohlar bo'limida"
+        ]
+      },
+      {
+        id: 71,
+        category: "Microsoft Word",
+        q: "Ctrl + Z qanday vazifa bajaradi?",
+        correct: "Oxirgi bajarilgan amalni bekor qilish (Undo) vazifasini",
+        distractors: [
+          "Hujjatdagi barcha matnni butunlay o'chirib yuborish vazifasini",
+          "Word dasturidan saqlamasdan chiqib ketish vazifasini",
+          "Matn shriftini kattalashtirish (Zoom) vazifasini"
+        ]
+      },
+      {
+        id: 72,
+        category: "Microsoft Word",
+        q: "Qanday qilib hujjatni parol bilan himoyalash mumkin?",
+        correct: "'Файл' -> 'Сведения' (Ma'lumotlar) -> 'Защитить документ' -> 'Зашифровать с паролем' orqali",
+        distractors: [
+          "'Главная' -> 'Шрифт' bo'limidan matn rangini oq rangga o'zgartirish orqali",
+          "'Вставка' -> 'Колонтитулы' bo'limiga parol so'zini yozib qo'yish orqali",
+          "Word hujjatlarini parol bilan himoyalash imkoniyati mavjud emas"
+        ]
+      },
+
+      // ===================== MICROSOFT EXCEL (73–82) =====================
+      {
+        id: 73,
+        category: "Microsoft Excel",
+        q: "Excel dasturi asosan nima uchun ishlatiladi?",
+        correct: "Elektron jadvallar yaratish, hisob-kitoblar qilish va ma'lumotlarni tahlil etish uchun",
+        distractors: [
+          "Faqat slayd-shou va animatsiyali taqdimotlar namoyish etish uchun",
+          "Badiiy rasmlar chizish va fotosuratlarni retush qilish uchun",
+          "Internet sahifalarini ko'rish va elektron pochta yuborish uchun"
+        ]
+      },
+      {
+        id: 74,
+        category: "Microsoft Excel",
+        q: "Excel fayllarining kengaytmasi nima?",
+        correct: ".xlsx (yoki eski versiyalarda .xls)",
+        distractors: [
+          ".docx (yoki eski versiyalarda .doc)",
+          ".pptx (yoki eski versiyalarda .ppt)",
+          ".jpg yoki .png"
+        ]
+      },
+      {
+        id: 75,
+        category: "Microsoft Excel",
+        q: "Excelda formulani kiritish qanday belgidan boshlanadi?",
+        correct: "Barobar (=) belgisi bilan boshlanadi",
+        distractors: [
+          "So'roq (?) belgisi bilan boshlanadi",
+          "Panjara (#) belgisi bilan boshlanadi",
+          "Foiz (%) belgisi bilan boshlanadi"
+        ]
+      },
+      {
+        id: 76,
+        category: "Microsoft Excel",
+        q: "Qanday funksiyalar asosiy matematik hisob-kitoblar uchun ishlatiladi?",
+        correct: "SUM (yig'indi), AVERAGE (o'rtacha), COUNT (soni) kabi matematik va statistik funksiyalar",
+        distractors: [
+          "BOLD, ITALIC, UNDERLINE kabi matn bezash funksiyalari",
+          "COPY, PASTE, PRINT kabi tizimli almashish buyruqlari",
+          "SLIDE, DESIGN, TRANSITION kabi taqdimot effektlari"
+        ]
+      },
+      {
+        id: 77,
+        category: "Microsoft Excel",
+        q: "Excelda ustunlar qanday belgilanadi?",
+        correct: "Lotin harflari (A, B, C...) bilan belgilanadi",
+        distractors: [
+          "Arab raqamlari (1, 2, 3...) bilan belgilanadi",
+          "Rim raqamlari (I, II, III...) bilan belgilanadi",
+          "Faqat maxsus tinish belgilari bilan belgilanadi"
+        ]
+      },
+      {
+        id: 78,
+        category: "Microsoft Excel",
+        q: "Excelda jadvalni qanday saqlash mumkin?",
+        correct: "'Файл' -> 'Сохранить' yoki Ctrl + S orqali oddiy kitob formatida (.xlsx) saqlanadi",
+        distractors: [
+          "'Данные' -> 'Фильтр' tugmasi orqali faqat matn shaklida saqlanadi",
+          "'Формулы' -> 'Автосумма' buyrug'i orqali saqlanadi",
+          "Excel jadvallari saqlanmaydi, faqat chop etib olinadi"
+        ]
+      },
+      {
+        id: 79,
+        category: "Microsoft Excel",
+        q: "Excelda Autosum tugmasi nima uchun kerak?",
+        correct: "Tanlangan kataklar yig'indisini (avtomatik hisoblash) tezda chiqarish uchun",
+        distractors: [
+          "Jadvaldagi barcha matnlarni alifbo tartibida saralash uchun",
+          "Kataklardagi noto'g'ri yozilgan imlo xatolarini tuzatish uchun",
+          "Jadvalga avtomatik ravishda rasm va logotip joylashtirish uchun"
+        ]
+      },
+      {
+        id: 80,
+        category: "Microsoft Excel",
+        q: "Excelda katakdagi ma'lumotni nusxalash uchun qaysi tugmalar ishlatiladi?",
+        correct: "Ctrl + C (nusxalash) va Ctrl + V (joylashtirish) tugmalari",
+        distractors: [
+          "Ctrl + P (nusxalash) va Ctrl + N (joylashtirish) tugmalari",
+          "Ctrl + B (nusxalash) va Ctrl + U (joylashtirish) tugmalari",
+          "Alt + F4 (nusxalash) va Esc (joylashtirish) tugmalari"
+        ]
+      },
+      {
+        id: 81,
+        category: "Microsoft Excel",
+        q: "Excelda ma'lumotlarni filtrlash qayerda amalga oshiriladi?",
+        correct: "'Данные' (Data) -> 'Фильтр' tugmasini bosish orqali",
+        distractors: [
+          "'Вставка' (Insert) -> 'Диаграммы' bo'limi orqali",
+          "'Разметка страницы' -> 'Поля' bo'limi orqali",
+          "'Файл' -> 'Параметры' menyusining til sozlamalari orqali"
+        ]
+      },
+      {
+        id: 82,
+        category: "Microsoft Excel",
+        q: "Excelda ustun yoki qatorni yashirish qayerdan amalga oshiriladi?",
+        correct: "Ustun yoki qator ustiga o'ng tugmani bosib, 'Скрыть' (Yashirish) buyrug'ini tanlash orqali",
+        distractors: [
+          "Katak ichidagi matnni Delete tugmasi bilan butunlay o'chirib tashlash orqali",
+          "F5 tugmasini bosib, butun ishchi varaqni yopish orqali",
+          "Excelda ustun yoki qatorni vaqtincha yashirish imkoni yo'q"
+        ]
+      },
+
+      // ===================== MICROSOFT POWERPOINT (83–89) =====================
+      {
+        id: 83,
+        category: "Microsoft PowerPoint",
+        q: "PowerPoint dasturining asosiy vazifasi nima?",
+        correct: "Taqdimotlar (prezentatsiyalar) yaratish va ularni namoyish etish",
+        distractors: [
+          "Bemorlarning elektron tibbiy kartalarini saqlash va retsept berish",
+          "Murakkab buxgalteriya hisobotlari va soliq jadvallarini tuzish",
+          "Kompyuterni viruslardan himoya qilish va tarmoqni boshqarish"
+        ]
+      },
+      {
+        id: 84,
+        category: "Microsoft PowerPoint",
+        q: "PowerPoint fayllarining kengaytmasi nima?",
+        correct: ".pptx (yoki eski versiyalarda .ppt)",
+        distractors: [
+          ".docx (yoki eski versiyalarda .doc)",
+          ".xlsx (yoki eski versiyalarda .xls)",
+          ".exe yoki .zip"
+        ]
+      },
+      {
+        id: 85,
+        category: "Microsoft PowerPoint",
+        q: "Slaydga matn qanday qo'shiladi?",
+        correct: "'Вставка' -> 'Надпись' (Matn oynasi) orqali yoki slayd ichidagi tayyor matn bloklariga bosib",
+        distractors: [
+          "'Слайд-шоу' -> 'С начала' tugmasini bosish orqali",
+          "'Файл' -> 'Печать' oynasiga matn yozish orqali",
+          "'Анимация' -> 'Область анимации' bo'limidan to'g'ridan-to'g'ri yozib"
+        ]
+      },
+      {
+        id: 86,
+        category: "Microsoft PowerPoint",
+        q: "Qanday tugma yordamida taqdimotni ishga tushirish mumkin?",
+        correct: "F5 tugmasi yoki 'Слайд-шоу' (Slide Show) -> 'С начала' (Boshidan) orqali",
+        distractors: [
+          "Ctrl + S tugmasi yoki 'Файл' -> 'Сохранить' orqali",
+          "F1 tugmasi yoki 'Справка' (Yordam) oynasi orqali",
+          "Ctrl + Z tugmasi yoki 'Главная' -> 'Удалить' orqali"
+        ]
+      },
+      {
+        id: 87,
+        category: "Microsoft PowerPoint",
+        q: "Qaysi menyuda slayd dizayni tanlanadi?",
+        correct: "'Конструктор' (Design) menyusidan",
+        distractors: [
+          "'Рецензирование' (Review) menyusidan",
+          "'Файл' -> 'Открыть' menyusidan",
+          "'Слайд-шоу' (Slide Show) menyusidan"
+        ]
+      },
+      {
+        id: 88,
+        category: "Microsoft PowerPoint",
+        q: "PowerPointda rasmni slaydga qanday qo'shiladi?",
+        correct: "'Вставка' -> 'Рисунки' bo'limi orqali rasm faylini tanlab",
+        distractors: [
+          "'Переходы' -> 'Длительность' bo'limi orqali",
+          "'Конструктор' -> 'Размер слайда' tugmasi orqali",
+          "'Вид' -> 'Сортировщик слайдов' rejimi orqali"
+        ]
+      },
+      {
+        id: 89,
+        category: "Microsoft PowerPoint",
+        q: "Animatsiya nima uchun kerak?",
+        correct: "Slayddagi matn yoki obyektlarga harakatlanish effektlarini berish uchun",
+        distractors: [
+          "Taqdimot faylining hajmini kichraytirib, parol qo'yish uchun",
+          "Slaydlarni avtomatik ravishda printerdan chop etish uchun",
+          "Matndagi grammatik xatolarni tekshirish va tuzatish uchun"
+        ]
+      },
+
+      // ===================== INTERNET ASOSLARI (90–96) =====================
+      {
+        id: 90,
+        category: "Internet asoslari",
+        q: "Internet nima?",
+        correct: "Global kompyuter tarmog'i bo'lib, butun dunyodagi axborot tizimlarini o'zaro bog'laydi",
+        distractors: [
+          "Faqat bitta bino ichidagi printerlarni bog'lovchi qisqa elektr kabeli",
+          "Kompyuterda matn terish va jadvallar tuzish uchun mo'ljallangan ofis dasturi",
+          "Telefon batareyasini simsiz quvvatlash uchun ishlatiladigan qurilma"
+        ]
+      },
+      {
+        id: 91,
+        category: "Internet asoslari",
+        q: "Veb-brauzer vazifasi nima?",
+        correct: "Internetdagi veb-saytlarni va sahifalarni ko'rish, qidirish va ulardan foydalanish",
+        distractors: [
+          "Kompyuter protsessorining haroratini o'lchash va boshqarish",
+          "Qog'oz hujjatlarni raqamli rasmga aylantirish va tahrirlash",
+          "Operatsion tizimni yangilash va qattiq diskni formatlash"
+        ]
+      },
+      {
+        id: 92,
+        category: "Internet asoslari",
+        q: "Google Drive qanday xizmat turi?",
+        correct: "Bulutli ma'lumotlar ombori bo'lib, fayllarni onlayn saqlash va ulashish xizmati",
+        distractors: [
+          "Faqat avtomobil yo'nalishlarini ko'rsatuvchi navigator dasturi",
+          "Kompyuter viruslarini aniqlovchi pullik antivirus tizimi",
+          "Internet tezligini o'lchash va Wi-Fi parolini buzish vositasi"
+        ]
+      },
+      {
+        id: 93,
+        category: "Internet asoslari",
+        q: "YouTube qanday platforma?",
+        correct: "Video-xosting va ijtimoiy media platformasi (videolarni ko'rish va yuklash uchun)",
+        distractors: [
+          "Elektron jadvallar va moliyaviy formulalar bilan ishlovchi ofis dasturi",
+          "Bemorlarni poliklinikaga biriktiruvchi yagona tibbiyot bazasi",
+          "Faqat matnli elektron kitoblarni chop etuvchi nashriyot sayti"
+        ]
+      },
+      {
+        id: 94,
+        category: "Internet asoslari",
+        q: "Elektron pochta (email) nima uchun kerak?",
+        correct: "Internet orqali xatlar, hujjatlar va fayllarni elektron shaklda yuborish va qabul qilish uchun",
+        distractors: [
+          "Kompyuter ekranini suratga olish va videoga yozish uchun",
+          "Faqat kompyuter o'yinlarini oflayn rejimda o'ynash uchun",
+          "Printerni kompyuterga drayversiz ulash uchun"
+        ]
+      },
+      {
+        id: 95,
+        category: "Internet asoslari",
+        q: "URL nima?",
+        correct: "Internetdagi biror resurs yoki veb-sahifaning yagona va aniq manzili (Uniform Resource Locator)",
+        distractors: [
+          "Kompyuterga tashqi fleshka ulash uchun mo'ljallangan port turi",
+          "Elektron hujjatlarning parol bilan shifrlangan maxfiy kengaytmasi",
+          "Operatsion tizimning avtomatik yangilanish xizmati nomi"
+        ]
+      },
+      {
+        id: 96,
+        category: "Internet asoslari",
+        q: "Wi-Fi nima?",
+        correct: "Simlar va kabellarsiz, radio to'lqinlar orqali qurilmalarni yuqori tezlikdagi Internetga ulash texnologiyasi",
+        distractors: [
+          "Matnli fayllarni PDF formatiga o'giruvchi bepul dastur",
+          "Kompyuterning operativ xotirasini kengaytiruvchi ichki karta",
+          "Faqat telefon qo'ng'iroqlarini yozib oluvchi mobil ilova"
+        ]
+      }
+    ];
+
+    // =========================================================
+    // APPLICATION STATE
+    // =========================================================
+    const state = {
+      userName: '',
+      selectedMode: 'all',
+      shuffleQuestions: true,
+      shuffleOptions: true,
+      isRetrySession: false,
+
+      activeQuestions: [],     // Current quiz question objects
+      currentIndex: 0,
+      currentOptions: [],      // Shuffled options for active question
+      answeredCurrent: false,
+
+      correctCount: 0,
+      wrongCount: 0,
+      answersHistory: [],      // { question, chosenText, isCorrect }
+      missedQuestions: [],     // Question objects answered wrongly in this session
+
+      timerInterval: null,
+      elapsedSeconds: 0,
+
+      reviewTab: 'mistakes',
+      reviewExpanded: false,
+    };
+
+    // =========================================================
+    // DOM REFERENCES
+    // =========================================================
+    const els = {
+      // Theme
+      themeToggleBtn: document.getElementById('theme-toggle-btn'),
+      iconSun: document.getElementById('icon-sun'),
+      iconMoon: document.getElementById('icon-moon'),
+      themeLabel: document.getElementById('theme-label'),
+
+      // Screens
+      screenStart: document.getElementById('screen-start'),
+      screenQuiz: document.getElementById('screen-quiz'),
+      screenResults: document.getElementById('screen-results'),
+
+      // Start controls
+      userNameInput: document.getElementById('user-name-input'),
+      nameErrorMsg: document.getElementById('name-error-msg'),
+      modeCards: document.querySelectorAll('.mode-card'),
+      toggleShuffleQ: document.getElementById('toggle-shuffle-questions'),
+      toggleShuffleO: document.getElementById('toggle-shuffle-options'),
+      startQuizBtn: document.getElementById('start-quiz-btn'),
+      downloadHtmlBtn: document.getElementById('download-html-btn'),
+
+      // Quiz HUD & Card
+      quizUserName: document.getElementById('quiz-user-name'),
+      quizRetryPill: document.getElementById('quiz-retry-pill'),
+      liveCorrect: document.getElementById('live-correct-count'),
+      liveWrong: document.getElementById('live-wrong-count'),
+      liveTimer: document.getElementById('live-timer'),
+      quizProgressText: document.getElementById('quiz-progress-text'),
+      quizCategoryPill: document.getElementById('quiz-category-pill'),
+      quizProgressBar: document.getElementById('quiz-progress-bar'),
+
+      questionCard: document.getElementById('question-card'),
+      questionOriginalId: document.getElementById('question-original-id'),
+      questionText: document.getElementById('question-text'),
+      optionsContainer: document.getElementById('options-container'),
+      feedbackBanner: document.getElementById('feedback-banner'),
+      feedbackIcon: document.getElementById('feedback-icon'),
+      feedbackTitle: document.getElementById('feedback-title'),
+      feedbackDetail: document.getElementById('feedback-detail'),
+      finishEarlyBtn: document.getElementById('finish-early-btn'),
+      nextQuestionBtn: document.getElementById('next-question-btn'),
+      nextBtnLabel: document.getElementById('next-btn-label'),
+
+      // Results Screen
+      resultMasteryBadge: document.getElementById('result-mastery-badge'),
+      resultGreeting: document.getElementById('result-greeting'),
+      resultSubtitle: document.getElementById('result-subtitle'),
+      resultRingProgress: document.getElementById('result-ring-progress'),
+      resultPercent: document.getElementById('result-percent'),
+      resultScoreFraction: document.getElementById('result-score-fraction'),
+      statTotalScore: document.getElementById('stat-total-score'),
+      statCorrect: document.getElementById('stat-correct'),
+      statWrong: document.getElementById('stat-wrong'),
+      statTime: document.getElementById('stat-time'),
+      retryMistakesBtn: document.getElementById('retry-mistakes-btn'),
+      retryMistakesLabel: document.getElementById('retry-mistakes-label'),
+      newTestBtn: document.getElementById('new-test-btn'),
+
+      // Review section
+      reviewSectionCard: document.getElementById('review-section-card'),
+      toggleReviewBtn: document.getElementById('toggle-review-btn'),
+      reviewSubtitle: document.getElementById('review-subtitle'),
+      reviewChevron: document.getElementById('review-chevron'),
+      reviewPanel: document.getElementById('review-panel'),
+      tabMistakes: document.getElementById('tab-mistakes'),
+      tabAll: document.getElementById('tab-all'),
+      tabMistakesCount: document.getElementById('tab-mistakes-count'),
+      tabAllCount: document.getElementById('tab-all-count'),
+      reviewList: document.getElementById('review-list'),
+
+      // Modal & Toast & Confetti
+      confirmModal: document.getElementById('confirm-modal'),
+      confirmModalDesc: document.getElementById('confirm-modal-desc'),
+      modalCancelBtn: document.getElementById('modal-cancel-btn'),
+      modalConfirmBtn: document.getElementById('modal-confirm-btn'),
+      toastContainer: document.getElementById('toast-container'),
+      confettiCanvas: document.getElementById('confetti-canvas'),
+    };
+
+    // =========================================================
+    // UTILITY FUNCTIONS
+    // =========================================================
+
+    /** Fisher-Yates unbiased shuffle algorithm */
+    function fisherYatesShuffle(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    /** Format seconds as MM:SS */
+    function formatTime(totalSec) {
+      const mins = Math.floor(totalSec / 60);
+      const secs = totalSec % 60;
+      return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    /** Escape HTML special characters safely */
+    function escapeHTML(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    /** Display a subtle glass toast notification */
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      const colors = {
+        success: 'bg-emerald-600 text-white border-emerald-400/40',
+        error: 'bg-rose-600 text-white border-rose-400/40',
+        info: 'bg-slate-900 dark:bg-teal-700 text-white border-white/15',
+      };
+      toast.className = `pointer-events-auto px-4 py-3 rounded-2xl border shadow-xl text-xs sm:text-sm font-bold flex items-center gap-2 animate-pop-in ${colors[type] || colors.info}`;
+      toast.textContent = message;
+      els.toastContainer.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(8px)';
+        setTimeout(() => toast.remove(), 320);
+      }, 3000);
+    }
+
+    // =========================================================
+    // THEME MANAGEMENT (DARK / LIGHT)
+    // =========================================================
+    function applyTheme(theme) {
+      const isDark = theme === 'dark';
+      document.documentElement.classList.toggle('dark', isDark);
+      els.iconSun.classList.toggle('hidden', !isDark);
+      els.iconMoon.classList.toggle('hidden', isDark);
+      els.themeLabel.textContent = isDark ? 'Yorug‘ rejim' : 'Tungi rejim';
+      try {
+        localStorage.setItem('dmed_quiz_theme', theme);
+      } catch (e) { /* Ignore storage restrictions */ }
+    }
+
+    function initTheme() {
+      let saved = null;
+      try {
+        saved = localStorage.getItem('dmed_quiz_theme');
+      } catch (e) { /* Ignore */ }
+      if (saved === 'dark' || saved === 'light') {
+        applyTheme(saved);
+      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        applyTheme('dark');
+      } else {
+        applyTheme('light');
+      }
+    }
+
+    // =========================================================
+    // START SCREEN MODE SELECTION
+    // =========================================================
+    function updateModeSelectionUI() {
+      els.modeCards.forEach((card) => {
+        const isSelected = card.dataset.mode === state.selectedMode;
+        if (isSelected) {
+          card.classList.add(
+            'border-teal-500', 'dark:border-teal-400',
+            'bg-teal-50/85', 'dark:bg-teal-900/35',
+            'shadow-md', 'shadow-teal-500/15'
+          );
+          card.classList.remove(
+            'border-slate-200', 'dark:border-slate-700/80',
+            'bg-white/70', 'dark:bg-slate-800/50',
+            'hover:border-teal-300', 'dark:hover:border-teal-700'
+          );
+        } else {
+          card.classList.remove(
+            'border-teal-500', 'dark:border-teal-400',
+            'bg-teal-50/85', 'dark:bg-teal-900/35',
+            'shadow-md', 'shadow-teal-500/15'
+          );
+          card.classList.add(
+            'border-slate-200', 'dark:border-slate-700/80',
+            'bg-white/70', 'dark:bg-slate-800/50',
+            'hover:border-teal-300', 'dark:hover:border-teal-700'
+          );
+        }
+      });
+    }
+
+    /** Build question pool based on selected mode */
+    function getQuestionsByMode(mode) {
+      let pool = [];
+      switch (mode) {
+        case 'dmed':
+          pool = QUESTIONS.filter((q) => q.id >= 1 && q.id <= 50);
+          break;
+        case 'office':
+          pool = QUESTIONS.filter((q) => q.id >= 51 && q.id <= 89);
+          break;
+        case 'internet':
+          pool = QUESTIONS.filter((q) => q.id >= 90 && q.id <= 96);
+          break;
+        case 'quick25':
+          pool = fisherYatesShuffle(QUESTIONS).slice(0, 25);
+          break;
+        case 'all':
+        default:
+          pool = [...QUESTIONS];
+          break;
+      }
+      if (state.shuffleQuestions && mode !== 'quick25') {
+        pool = fisherYatesShuffle(pool);
+      }
+      return pool;
+    }
+
+    // =========================================================
+    // TIMER CONTROLS
+    // =========================================================
+    function startTimer() {
+      stopTimer();
+      state.elapsedSeconds = 0;
+      els.liveTimer.textContent = '00:00';
+      state.timerInterval = setInterval(() => {
+        state.elapsedSeconds += 1;
+        els.liveTimer.textContent = formatTime(state.elapsedSeconds);
+      }, 1000);
+    }
+
+    function stopTimer() {
+      if (state.timerInterval) {
+        clearInterval(state.timerInterval);
+        state.timerInterval = null;
+      }
+    }
+
+    // =========================================================
+    // QUIZ ENGINE
+    // =========================================================
+    function showScreen(screenName) {
+      els.screenStart.classList.add('hidden');
+      els.screenQuiz.classList.add('hidden');
+      els.screenResults.classList.add('hidden');
+
+      if (screenName === 'start') els.screenStart.classList.remove('hidden');
+      if (screenName === 'quiz') els.screenQuiz.classList.remove('hidden');
+      if (screenName === 'results') els.screenResults.classList.remove('hidden');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function startQuiz(customQuestionList = null, isRetry = false) {
+      if (!isRetry) {
+        const nameVal = els.userNameInput.value.trim();
+        if (!nameVal) {
+          els.nameErrorMsg.classList.remove('hidden');
+          els.userNameInput.classList.add('border-rose-500', 'animate-shake');
+          els.userNameInput.focus();
+          setTimeout(() => els.userNameInput.classList.remove('animate-shake'), 380);
+          return;
+        }
+        state.userName = nameVal;
+        try {
+          localStorage.setItem('dmed_quiz_username', nameVal);
+        } catch (e) { /* Ignore */ }
+      }
+
+      state.shuffleQuestions = els.toggleShuffleQ.checked;
+      state.shuffleOptions = els.toggleShuffleO.checked;
+      state.isRetrySession = isRetry;
+
+      if (customQuestionList && customQuestionList.length > 0) {
+        state.activeQuestions = fisherYatesShuffle(customQuestionList);
+      } else {
+        state.activeQuestions = getQuestionsByMode(state.selectedMode);
+      }
+
+      state.currentIndex = 0;
+      state.correctCount = 0;
+      state.wrongCount = 0;
+      state.answersHistory = [];
+      state.missedQuestions = [];
+      state.answeredCurrent = false;
+
+      // Update HUD
+      els.quizUserName.textContent = state.userName;
+      els.quizRetryPill.classList.toggle('hidden', !isRetry);
+      els.liveCorrect.textContent = '0';
+      els.liveWrong.textContent = '0';
+
+      stopConfetti();
+      showScreen('quiz');
+      startTimer();
+      renderCurrentQuestion();
+    }
+
+    function renderCurrentQuestion() {
+      const qObj = state.activeQuestions[state.currentIndex];
+      const total = state.activeQuestions.length;
+      state.answeredCurrent = false;
+
+      // Trigger smooth card re-entrance animation
+      els.questionCard.classList.remove('animate-card-in');
+      void els.questionCard.offsetWidth; // Force reflow
+      els.questionCard.classList.add('animate-card-in');
+
+      // Update HUD progress
+      els.quizProgressText.textContent = `${state.currentIndex + 1} / ${total}`;
+      els.quizCategoryPill.textContent = qObj.category;
+      const pct = Math.round(((state.currentIndex) / total) * 100);
+      els.quizProgressBar.style.width = `${pct}%`;
+
+      // Question text
+      els.questionOriginalId.textContent = `Rasmiy savol #${qObj.id}`;
+      els.questionText.textContent = qObj.q;
+
+      // Prepare 4 options (1 correct + 3 distractors)
+      const rawOptions = [
+        { text: qObj.correct, isCorrect: true },
+        ...qObj.distractors.map((d) => ({ text: d, isCorrect: false }))
+      ];
+      state.currentOptions = state.shuffleOptions ? fisherYatesShuffle(rawOptions) : rawOptions;
+
+      // Render options buttons
+      const letters = ['A', 'B', 'C', 'D'];
+      els.optionsContainer.innerHTML = '';
+
+      state.currentOptions.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.dataset.index = idx;
+        btn.className = [
+          'option-btn w-full text-left p-4 rounded-2xl border-2',
+          'bg-white/85 dark:bg-slate-800/75',
+          'border-slate-200/90 dark:border-slate-700/80',
+          'hover:border-teal-400 dark:hover:border-teal-500 hover:bg-teal-50/50 dark:hover:bg-slate-800',
+          'flex items-start gap-3.5 cursor-pointer group'
+        ].join(' ');
+
+        btn.innerHTML = `
+          <span class="opt-letter w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-700/90 group-hover:bg-teal-100 dark:group-hover:bg-teal-900/60 text-slate-700 dark:text-slate-200 group-hover:text-teal-700 dark:group-hover:text-teal-300 font-extrabold text-sm flex items-center justify-center shrink-0 transition-colors">
+            ${letters[idx]}
+          </span>
+          <span class="opt-text text-sm sm:text-base font-medium text-slate-800 dark:text-slate-100 leading-snug pt-0.5 flex-1">
+            ${escapeHTML(opt.text)}
+          </span>
+          <span class="opt-status-icon hidden w-6 h-6 rounded-full items-center justify-center shrink-0 mt-0.5"></span>
+        `;
+
+        btn.addEventListener('click', () => handleOptionSelect(idx));
+        els.optionsContainer.appendChild(btn);
+      });
+
+      // Reset feedback banner & Next button
+      els.feedbackBanner.classList.add('hidden');
+      els.nextQuestionBtn.disabled = true;
+      els.nextBtnLabel.textContent = (state.currentIndex === total - 1)
+        ? 'Natijani ko‘rish'
+        : 'Keyingi savol';
+    }
+
+    function handleOptionSelect(selectedIdx) {
+      if (state.answeredCurrent) return;
+      state.answeredCurrent = true;
+
+      const qObj = state.activeQuestions[state.currentIndex];
+      const chosenOpt = state.currentOptions[selectedIdx];
+      const isCorrect = chosenOpt.isCorrect;
+
+      // Update counters & history
+      if (isCorrect) {
+        state.correctCount += 1;
+        els.liveCorrect.textContent = state.correctCount;
+      } else {
+        state.wrongCount += 1;
+        els.liveWrong.textContent = state.wrongCount;
+        state.missedQuestions.push(qObj);
+      }
+
+      state.answersHistory.push({
+        question: qObj,
+        chosenText: chosenOpt.text,
+        isCorrect: isCorrect,
+      });
+
+      // Update progress bar to include this answered question
+      const total = state.activeQuestions.length;
+      const pct = Math.round(((state.currentIndex + 1) / total) * 100);
+      els.quizProgressBar.style.width = `${pct}%`;
+
+      // Style all option buttons & lock them
+      const buttons = els.optionsContainer.querySelectorAll('button.option-btn');
+      buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        btn.classList.remove('cursor-pointer', 'hover:border-teal-400', 'dark:hover:border-teal-500', 'hover:bg-teal-50/50', 'dark:hover:bg-slate-800');
+
+        const opt = state.currentOptions[idx];
+        const letterEl = btn.querySelector('.opt-letter');
+        const iconEl = btn.querySelector('.opt-status-icon');
+
+        if (opt.isCorrect) {
+          // Highlight true correct answer in vibrant green
+          btn.classList.remove('bg-white/85', 'dark:bg-slate-800/75', 'border-slate-200/90', 'dark:border-slate-700/80');
+          btn.classList.add('bg-emerald-50', 'dark:bg-emerald-950/50', 'border-emerald-500', 'dark:border-emerald-400', 'shadow-sm', 'shadow-emerald-500/15');
+
+          letterEl.classList.remove('bg-slate-100', 'dark:bg-slate-700/90', 'text-slate-700', 'dark:text-slate-200');
+          letterEl.classList.add('bg-emerald-500', 'text-white');
+
+          iconEl.classList.remove('hidden');
+          iconEl.classList.add('flex', 'bg-emerald-500', 'text-white');
+          iconEl.innerHTML = `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+        } else if (idx === selectedIdx && !isCorrect) {
+          // Highlight user's wrong selection in vibrant red
+          btn.classList.remove('bg-white/85', 'dark:bg-slate-800/75', 'border-slate-200/90', 'dark:border-slate-700/80');
+          btn.classList.add('bg-rose-50', 'dark:bg-rose-950/50', 'border-rose-500', 'dark:border-rose-400', 'shadow-sm', 'shadow-rose-500/15');
+
+          letterEl.classList.remove('bg-slate-100', 'dark:bg-slate-700/90', 'text-slate-700', 'dark:text-slate-200');
+          letterEl.classList.add('bg-rose-500', 'text-white');
+
+          iconEl.classList.remove('hidden');
+          iconEl.classList.add('flex', 'bg-rose-500', 'text-white');
+          iconEl.innerHTML = `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+        } else {
+          // Dim unrelated options slightly
+          btn.classList.add('opacity-55');
+        }
+      });
+
+      // Show instant feedback banner
+      els.feedbackBanner.classList.remove(
+        'hidden',
+        'bg-emerald-50/90', 'dark:bg-emerald-950/50', 'border-emerald-400/70', 'dark:border-emerald-700',
+        'bg-rose-50/90', 'dark:bg-rose-950/50', 'border-rose-400/70', 'dark:border-rose-700'
+      );
+
+      if (isCorrect) {
+        els.feedbackBanner.classList.add('bg-emerald-50/90', 'dark:bg-emerald-950/50', 'border-emerald-400/70', 'dark:border-emerald-700');
+        els.feedbackIcon.className = 'w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center shrink-0 mt-0.5';
+        els.feedbackIcon.innerHTML = `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><polyline points="20 6 9 17 4 12"/></svg>`;
+        els.feedbackTitle.className = 'text-sm sm:text-base font-extrabold text-emerald-800 dark:text-emerald-300';
+        els.feedbackTitle.textContent = "Barakalla! To'g'ri javob";
+        els.feedbackDetail.className = 'text-xs sm:text-sm font-medium text-emerald-700 dark:text-emerald-200/90 leading-relaxed';
+        els.feedbackDetail.textContent = qObj.correct;
+      } else {
+        els.feedbackBanner.classList.add('bg-rose-50/90', 'dark:bg-rose-950/50', 'border-rose-400/70', 'dark:border-rose-700');
+        els.feedbackIcon.className = 'w-8 h-8 rounded-xl bg-rose-500 text-white flex items-center justify-center shrink-0 mt-0.5';
+        els.feedbackIcon.innerHTML = `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+        els.feedbackTitle.className = 'text-sm sm:text-base font-extrabold text-rose-800 dark:text-rose-300';
+        els.feedbackTitle.textContent = "Noto'g'ri! To'g'ri javob:";
+        els.feedbackDetail.className = 'text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-100 leading-relaxed';
+        els.feedbackDetail.textContent = qObj.correct;
+      }
+
+      // Enable Next button
+      els.nextQuestionBtn.disabled = false;
+    }
+
+    function goToNextQuestion() {
+      if (!state.answeredCurrent) return;
+      if (state.currentIndex < state.activeQuestions.length - 1) {
+        state.currentIndex += 1;
+        renderCurrentQuestion();
+      } else {
+        finishQuiz();
+      }
+    }
+
+    // =========================================================
+    // RESULTS SCREEN & REVIEW SECTION
+    // =========================================================
+    function finishQuiz() {
+      stopTimer();
+      closeConfirmModal();
+
+      const answeredTotal = state.answersHistory.length;
+      const totalPlanned = state.activeQuestions.length;
+      // Denominator is answeredTotal if finished early with at least 1 answer, else totalPlanned
+      const baseTotal = answeredTotal > 0 ? answeredTotal : totalPlanned;
+      const percent = baseTotal > 0 ? Math.round((state.correctCount / baseTotal) * 100) : 0;
+
+      // Determine mastery rating
+      let ratingText = '';
+      let ratingClasses = '';
+      let greetingText = '';
+      let subtitleText = '';
+
+      if (percent >= 86) {
+        ratingText = "A'lo daraja";
+        ratingClasses = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300';
+        greetingText = `Ajoyib natija, ${state.userName}!`;
+        subtitleText = state.isRetrySession && state.wrongCount === 0
+          ? "Siz barcha xato qilgan savollaringizni 100% to'g'ri yechdingiz! Bilimingiz mustahkamlandi."
+          : "Siz DMED va kompyuter savodxonligi bo'yicha yuqori tayyorgarlik darajasini ko'rsatdingiz.";
+      } else if (percent >= 71) {
+        ratingText = "Yaxshi natija";
+        ratingClasses = 'bg-teal-100 text-teal-800 dark:bg-teal-900/60 dark:text-teal-300';
+        greetingText = `Yaxshi harakat, ${state.userName}!`;
+        subtitleText = "Ko'pchilik savollarga to'g'ri javob berdingiz. Qolgan xatolarni qayta ishlab 100% ga yetkazing.";
+      } else if (percent >= 56) {
+        ratingText = "Qoniqarli";
+        ratingClasses = 'bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300';
+        greetingText = `Yomon emas, ${state.userName}`;
+        subtitleText = "Asosiy bilimlarga egasiz, ammo xato qilingan savollarni qayta mashq qilish tavsiya etiladi.";
+      } else {
+        ratingText = "Qayta mashq qiling";
+        ratingClasses = 'bg-rose-100 text-rose-800 dark:bg-rose-900/60 dark:text-rose-300';
+        greetingText = `Mashq qilishda davom eting, ${state.userName}`;
+        subtitleText = "Xatolarni ko'rib chiqing va quyidagi tugma orqali xato savollarni qayta ishlang — har bir urinishda natijangiz yaxshilanadi!";
+      }
+
+      els.resultMasteryBadge.className = `inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-extrabold shadow-sm ${ratingClasses}`;
+      els.resultMasteryBadge.textContent = ratingText;
+      els.resultGreeting.textContent = greetingText;
+      els.resultSubtitle.textContent = subtitleText;
+
+      // Update numbers
+      els.resultPercent.textContent = `${percent}%`;
+      els.resultScoreFraction.textContent = `${state.correctCount} / ${baseTotal} ball`;
+      els.statTotalScore.textContent = `${state.correctCount} / ${baseTotal}`;
+      els.statCorrect.textContent = state.correctCount;
+      els.statWrong.textContent = state.wrongCount;
+      els.statTime.textContent = formatTime(state.elapsedSeconds);
+
+      // Animate SVG circular ring (circumference = 2 * PI * 76 ≈ 477.52)
+      const circumference = 477.52;
+      els.resultRingProgress.style.strokeDashoffset = circumference;
+      setTimeout(() => {
+        const offset = circumference - (percent / 100) * circumference;
+        els.resultRingProgress.style.strokeDashoffset = offset;
+      }, 80);
+
+      // Show/Hide Retry Mistakes Button
+      const mistakesCount = state.missedQuestions.length;
+      if (mistakesCount > 0) {
+        els.retryMistakesBtn.classList.remove('hidden');
+        els.retryMistakesLabel.textContent = `Xato qilingan savollarni qayta ishlash (${mistakesCount} ta)`;
+      } else {
+        els.retryMistakesBtn.classList.add('hidden');
+      }
+
+      // Setup Review Panel
+      els.tabMistakesCount.textContent = mistakesCount;
+      els.tabAllCount.textContent = answeredTotal;
+      state.reviewTab = mistakesCount > 0 ? 'mistakes' : 'all';
+      state.reviewExpanded = mistakesCount > 0;
+      els.reviewSubtitle.textContent = mistakesCount > 0
+        ? `${mistakesCount} ta xato savol va ularning to'g'ri javoblari`
+        : "Birorta ham xato yo'q! Barcha ishlangan javoblarni ko'rishingiz mumkin.";
+
+      updateReviewPanelVisibility();
+      renderReviewList();
+
+      showScreen('results');
+
+      // Launch celebratory confetti for high scores (>= 80%)
+      if (percent >= 80 && answeredTotal > 0) {
+        launchConfetti();
+      }
+    }
+
+    function updateReviewPanelVisibility() {
+      els.reviewPanel.classList.toggle('hidden', !state.reviewExpanded);
+      els.reviewChevron.style.transform = state.reviewExpanded ? 'rotate(180deg)' : 'rotate(0deg)';
+    }
+
+    function updateReviewTabsUI() {
+      const activeCls = ['bg-teal-600', 'text-white', 'shadow-sm'];
+      const inactiveCls = ['bg-slate-100', 'dark:bg-slate-800', 'text-slate-600', 'dark:text-slate-300', 'hover:bg-slate-200', 'dark:hover:bg-slate-700'];
+
+      if (state.reviewTab === 'mistakes') {
+        els.tabMistakes.classList.add(...activeCls);
+        els.tabMistakes.classList.remove(...inactiveCls);
+        els.tabAll.classList.remove(...activeCls);
+        els.tabAll.classList.add(...inactiveCls);
+      } else {
+        els.tabAll.classList.add(...activeCls);
+        els.tabAll.classList.remove(...inactiveCls);
+        els.tabMistakes.classList.remove(...activeCls);
+        els.tabMistakes.classList.add(...inactiveCls);
+      }
+    }
+
+    function renderReviewList() {
+      updateReviewTabsUI();
+      const items = state.reviewTab === 'mistakes'
+        ? state.answersHistory.filter((item) => !item.isCorrect)
+        : state.answersHistory;
+
+      els.reviewList.innerHTML = '';
+
+      if (items.length === 0) {
+        els.reviewList.innerHTML = `
+          <div class="p-6 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/50 text-center">
+            <p class="text-sm font-bold text-emerald-800 dark:text-emerald-300">
+              ${state.reviewTab === 'mistakes' ? "Ajoyib! Bu testda birorta ham xato qilmadingiz." : "Hali birorta savolga javob berilmagan."}
+            </p>
+          </div>
+        `;
+        return;
+      }
+
+      items.forEach((entry, index) => {
+        const card = document.createElement('div');
+        card.className = `p-4 rounded-2xl border ${
+          entry.isCorrect
+            ? 'bg-emerald-50/40 dark:bg-emerald-950/20 border-emerald-200/80 dark:border-emerald-900/50'
+            : 'bg-white/80 dark:bg-slate-800/60 border-rose-200/80 dark:border-rose-900/50'
+        } space-y-2.5`;
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-2">
+            <span class="text-xs font-bold text-slate-500 dark:text-slate-400">
+              #${entry.question.id} • ${escapeHTML(entry.question.category)}
+            </span>
+            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold ${
+              entry.isCorrect
+                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-300'
+                : 'bg-rose-100 text-rose-700 dark:bg-rose-900/60 dark:text-rose-300'
+            }">
+              ${entry.isCorrect ? "To'g'ri" : "Xato"}
+            </span>
+          </div>
+          <p class="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-snug">
+            ${index + 1}. ${escapeHTML(entry.question.q)}
+          </p>
+          <div class="space-y-1.5 text-xs sm:text-sm">
+            ${!entry.isCorrect ? `
+              <div class="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800/70 text-rose-800 dark:text-rose-300">
+                <span class="font-extrabold">Sizning javobingiz:</span> ${escapeHTML(entry.chosenText)}
+              </div>
+            ` : ''}
+            <div class="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/70 text-emerald-800 dark:text-emerald-300">
+              <span class="font-extrabold">To'g'ri javob:</span> ${escapeHTML(entry.question.correct)}
+            </div>
+          </div>
+        `;
+        els.reviewList.appendChild(card);
+      });
+    }
+
+    // =========================================================
+    // CONFIRMATION MODAL (CUSTOM — NO NATIVE CONFIRM)
+    // =========================================================
+    function openConfirmModal() {
+      const remaining = state.activeQuestions.length - state.answersHistory.length;
+      els.confirmModalDesc.textContent = remaining > 0
+        ? `Hali ${remaining} ta javob berilmagan savol bor. Testni hozir yakunlasangiz, natijangiz shu paytgacha ishlangan ${state.answersHistory.length} ta savol asosida hisoblanadi.`
+        : "Testni yakunlab, natijalar sahifasiga o'tasizmi?";
+      els.confirmModal.classList.remove('hidden');
+    }
+
+    function closeConfirmModal() {
+      els.confirmModal.classList.add('hidden');
+    }
+
+    // =========================================================
+    // CONFETTI ANIMATION ENGINE (RESPONSIVE CANVAS)
+    // =========================================================
+    let confettiAnimId = null;
+    let confettiParticles = [];
+
+    function resizeConfettiCanvas() {
+      els.confettiCanvas.width = window.innerWidth;
+      els.confettiCanvas.height = window.innerHeight;
+    }
+
+    function launchConfetti() {
+      stopConfetti();
+      resizeConfettiCanvas();
+      els.confettiCanvas.classList.remove('hidden');
+      const ctx = els.confettiCanvas.getContext('2d');
+      const colors = ['#14b8a6', '#10b981', '#06b6d4', '#f59e0b', '#38bdf8', '#f43f5e'];
+
+      confettiParticles = Array.from({ length: 120 }, () => ({
+        x: Math.random() * els.confettiCanvas.width,
+        y: Math.random() * -els.confettiCanvas.height * 0.6 - 20,
+        w: Math.random() * 9 + 5,
+        h: Math.random() * 5 + 4,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vx: (Math.random() - 0.5) * 3.2,
+        vy: Math.random() * 3.4 + 2.2,
+        angle: Math.random() * Math.PI * 2,
+        spin: (Math.random() - 0.5) * 0.16,
+        opacity: 1,
+      }));
+
+      let frames = 0;
+      function animate() {
+        ctx.clearRect(0, 0, els.confettiCanvas.width, els.confettiCanvas.height);
+        frames += 1;
+        let activeCount = 0;
+
+        confettiParticles.forEach((p) => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.angle += p.spin;
+          if (frames > 150) p.opacity = Math.max(0, p.opacity - 0.014);
+
+          if (p.opacity > 0 && p.y < els.confettiCanvas.height + 30) {
+            activeCount += 1;
+            ctx.save();
+            ctx.globalAlpha = p.opacity;
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.angle);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            ctx.restore();
+          }
+        });
+
+        if (activeCount > 0 && frames < 280) {
+          confettiAnimId = requestAnimationFrame(animate);
+        } else {
+          stopConfetti();
+        }
+      }
+      confettiAnimId = requestAnimationFrame(animate);
+    }
+
+    function stopConfetti() {
+      if (confettiAnimId) {
+        cancelAnimationFrame(confettiAnimId);
+        confettiAnimId = null;
+      }
+      els.confettiCanvas.classList.add('hidden');
+    }
+
+    // =========================================================
+    // STANDALONE HTML FILE DOWNLOADER (hamshira.tes.html)
+    // =========================================================
+    function downloadStandaloneHTML() {
+      try {
+        // Capture standalone HTML from documentElement.outerHTML
+        const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'hamshira.tes.html';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        showToast("hamshira.tes.html muvaffaqiyatli yuklab olindi!", "success");
+      } catch (err) {
+        showToast("Faylni yuklab olishda xatolik yuz berdi.", "error");
+      }
+    }
+
+    // =========================================================
+    // EVENT LISTENERS & INITIALIZATION
+    // =========================================================
+    function initApp() {
+      initTheme();
+      updateModeSelectionUI();
+
+      // Restore previously entered username if saved
+      try {
+        const savedName = localStorage.getItem('dmed_quiz_username');
+        if (savedName) els.userNameInput.value = savedName;
+      } catch (e) { /* Ignore */ }
+
+      // Theme toggle
+      els.themeToggleBtn.addEventListener('click', () => {
+        const isDark = document.documentElement.classList.contains('dark');
+        applyTheme(isDark ? 'light' : 'dark');
+      });
+
+      // Clear validation error on input
+      els.userNameInput.addEventListener('input', () => {
+        els.nameErrorMsg.classList.add('hidden');
+        els.userNameInput.classList.remove('border-rose-500');
+      });
+
+      // Allow Enter key on name input to start quiz
+      els.userNameInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') startQuiz(null, false);
+      });
+
+      // Mode card clicks
+      els.modeCards.forEach((card) => {
+        card.addEventListener('click', () => {
+          state.selectedMode = card.dataset.mode;
+          updateModeSelectionUI();
+        });
+      });
+
+      // Start quiz button
+      els.startQuizBtn.addEventListener('click', () => startQuiz(null, false));
+
+      // Download standalone file button
+      els.downloadHtmlBtn.addEventListener('click', downloadStandaloneHTML);
+
+      // Next question button
+      els.nextQuestionBtn.addEventListener('click', goToNextQuestion);
+
+      // Early finish button & Modal actions
+      els.finishEarlyBtn.addEventListener('click', openConfirmModal);
+      els.modalCancelBtn.addEventListener('click', closeConfirmModal);
+      els.modalConfirmBtn.addEventListener('click', finishQuiz);
+      els.confirmModal.addEventListener('click', (e) => {
+        if (e.target === els.confirmModal) closeConfirmModal();
+      });
+
+      // Results actions
+      els.retryMistakesBtn.addEventListener('click', () => {
+        if (state.missedQuestions.length > 0) {
+          startQuiz([...state.missedQuestions], true);
+        }
+      });
+
+      els.newTestBtn.addEventListener('click', () => {
+        stopConfetti();
+        showScreen('start');
+      });
+
+      // Collapsible Review section & Tabs
+      els.toggleReviewBtn.addEventListener('click', () => {
+        state.reviewExpanded = !state.reviewExpanded;
+        updateReviewPanelVisibility();
+      });
+
+      els.tabMistakes.addEventListener('click', () => {
+        state.reviewTab = 'mistakes';
+        renderReviewList();
+      });
+
+      els.tabAll.addEventListener('click', () => {
+        state.reviewTab = 'all';
+        renderReviewList();
+      });
+
+      // Keyboard shortcuts during quiz (Enter / ArrowRight for Next, 1-4 for options)
+      document.addEventListener('keydown', (e) => {
+        if (els.screenQuiz.classList.contains('hidden')) return;
+        if (!els.confirmModal.classList.contains('hidden')) {
+          if (e.key === 'Escape') closeConfirmModal();
+          return;
+        }
+
+        if ((e.key === 'Enter' || e.key === 'ArrowRight') && state.answeredCurrent) {
+          e.preventDefault();
+          goToNextQuestion();
+        } else if (!state.answeredCurrent && ['1', '2', '3', '4'].includes(e.key)) {
+          const idx = Number(e.key) - 1;
+          if (idx < state.currentOptions.length) {
+            handleOptionSelect(idx);
+          }
+        }
+      });
+
+      // Handle window resize for confetti canvas
+      window.addEventListener('resize', () => {
+        if (!els.confettiCanvas.classList.contains('hidden')) {
+          resizeConfettiCanvas();
+        }
+      });
+    }
+
+    // Boot application when DOM is ready
+    document.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>
